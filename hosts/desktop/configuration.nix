@@ -71,11 +71,10 @@ in
   environment.systemPackages = with pkgs; [
     wget
     git
-    hyprland
     home-manager
   ];
- 
-  programs.hyprland.enable = true; # hyprland crashes on startup without this
+
+  programs.hyprland.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

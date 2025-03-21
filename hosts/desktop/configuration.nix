@@ -53,6 +53,7 @@
     isNormalUser = true;
     description = "Wyatt Avilla";
     extraGroups = [ "networkmanager" "wheel" ];
+    shell = pkgs.zsh;
     packages = with pkgs; [];
   };
 
@@ -69,6 +70,8 @@
     git
     home-manager
   ];
+
+  programs.zsh.enable = true;
 
   programs.hyprland = {
     enable = true;

@@ -76,6 +76,16 @@
     portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
   };
 
+  security.doas = {
+    enable = true;
+    extraRules = [
+      {
+        groups = [ "wheel" ];
+	noPass = true;
+      }
+    ];
+  };
+
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

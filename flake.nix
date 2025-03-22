@@ -6,32 +6,34 @@
     hyprland.url = "github:hyprwm/Hyprland";
   };
 
-  outputs = { self, nixpkgs, ... }:
-  let
-    system = "x86_64-linux";
+  outputs =
+    { self, nixpkgs, ... }:
+    let
+      system = "x86_64-linux";
 
-    pkgs = import nixpkgs {
-      inherit system;
-      
-      config = {
-        allowUnfree = true;
-      };
-    };
+      pkgs = import nixpkgs {
+        inherit system;
 
-    in {
-
-    nixosConfigurations = {
-      desktop = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-	  inherit system;
-	  inherit (self) inputs;
+        config = {
+          allowUnfree = true;
         };
-
-	modules = [
-	  ./hosts/desktop/configuration.nix
-	];
       };
-    };
+
+    in
+    {
+
+      nixosConfigurations = {
+        desktop = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit system;
+            inherit (self) inputs;
+          };
+
+          modules = [
+            ./hosts/desktop/configuration.nix
+          ];
+        };
+      };
 
     };
 }

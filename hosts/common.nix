@@ -4,7 +4,9 @@
   pkgs,
   ...
 }:
-
+let
+  syncthingDir = "/var/lib/syncthing/";
+in
 {
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [
@@ -36,6 +38,7 @@
     extraGroups = [
       "networkmanager"
       "wheel"
+      "syncthing"
     ];
     shell = pkgs.zsh;
     packages = with pkgs; [ ];
@@ -64,6 +67,26 @@
         groups = [ "wheel" ];
         noPass = true;
       }
+    ];
+  };
+
+  services.syncthing = {
+    enable = true;
+    overrideFolders = false;
+    dataDir = syncthingDir;
+    settings = {
+      devices = {
+        "ubuntu-closet" = {
+          id = "SNVTFBL-IBYKYJA-5A2ZSO6-4YDVZO5-HQUCMGS-Y7IAYFA-7A4F527-VWSLTQC";
+        };
+      };
+    };
+  };
+
+  systemd = {
+    services.syncthing.environment.STNODEFAULTFOLDER = "true";
+    tmpfiles.rules = [
+      "d ${syncthingDir} 0770 syncthing syncthing"
     ];
   };
 }

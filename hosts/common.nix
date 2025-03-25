@@ -85,9 +85,7 @@ in
 
   systemd = {
     services.syncthing.environment.STNODEFAULTFOLDER = "true";
-    tmpfiles.rules = [
-      "d ${syncthingDir} 0770 syncthing syncthing"
-    ];
+    tmpfiles.rules = [ "d ${syncthingDir} 0770 syncthing syncthing" ];
   };
 
   fileSystems."/tmp" = {

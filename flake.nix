@@ -29,9 +29,7 @@
             inherit (self) inputs;
           };
 
-          modules = [
-            ./hosts/desktop/configuration.nix
-          ];
+          modules = [ ./hosts/desktop/configuration.nix ];
         };
       };
 

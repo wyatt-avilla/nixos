@@ -7,5 +7,5 @@ on:
     branches: ["main"]
 
 jobs:
-  ci:
+  shared:
     uses: wyatt-avilla/nix-ci/.github/workflows/nix-ci.yml@main

@@ -32,6 +32,5 @@
           modules = [ ./hosts/desktop/configuration.nix ];
         };
       };
-
     };
 }

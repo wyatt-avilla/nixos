@@ -1,0 +1,7 @@
+repos:
+  - repo: https://github.com/wyatt-avilla/nix-ci
+    rev: v1.0
+    hooks:
+      - id: nixfmt
+      - id: statix
+      - id: nix-flake-check

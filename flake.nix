@@ -21,7 +21,6 @@
 
     in
     {
-
       nixosConfigurations = {
         desktop = nixpkgs.lib.nixosSystem {
           specialArgs = {
@@ -31,6 +30,17 @@
 
           modules = [ ./hosts/desktop/configuration.nix ];
         };
+      };
+
+      devShells.${system}.default = pkgs.mkShell {
+        packages = with pkgs; [
+          pre-commit
+          nixfmt-rfc-style
+          statix
+        ];
+        shellHook = ''
+          pre-commit install
+        '';
       };
     };
 }

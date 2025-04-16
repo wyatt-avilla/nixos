@@ -39,6 +39,7 @@ in
       "networkmanager"
       "wheel"
       "syncthing"
+      "dialout"
     ];
     shell = pkgs.zsh;
     packages = with pkgs; [ ];

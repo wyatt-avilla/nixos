@@ -14,6 +14,8 @@ in
     "flakes"
   ];
 
+  boot.tmp.cleanOnBoot = true;
+
   networking.networkmanager.enable = true;
 
   time.timeZone = "America/Los_Angeles";
@@ -88,14 +90,5 @@ in
   systemd = {
     services.syncthing.environment.STNODEFAULTFOLDER = "true";
     tmpfiles.rules = [ "d ${syncthingDir} 0770 syncthing syncthing" ];
-  };
-
-  fileSystems."/tmp" = {
-    device = "tmpfs";
-    fsType = "tmpfs";
-    options = [
-      "mode=1777"
-      "size=4G"
-    ];
   };
 }

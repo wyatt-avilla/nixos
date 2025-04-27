@@ -16,7 +16,11 @@ in
 
   boot.tmp.cleanOnBoot = true;
 
-  networking.networkmanager.enable = true;
+  networking = {
+    networkmanager.enable = true;
+    firewall.allowedTCPPorts = [ 57621 ]; # spotify local files
+    firewall.allowedUDPPorts = [ 5353 ]; # spotify cast
+  };
 
   time.timeZone = "America/Los_Angeles";
 

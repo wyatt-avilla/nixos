@@ -5,13 +5,16 @@
   ...
 }:
 let
+  sshUser = "wyatt";
+  sshUserHome = config.users.users.${sshUser}.home;
+
   desktopKey = "${config.variables.secretsDirectory}/desktop-ssh-key";
 
   authorizedKeysGenScript = pkgs.writeShellScriptBin "auth-key-file-gen" ''
     set -euo pipefail
 
     keyFile="${desktopKey}"
-    targetAuthorizedKeys="/root/.ssh/authorized_keys"
+    targetAuthorizedKeys="${sshUserHome}/.ssh/authorized_keys"
 
     mkdir -p "$(dirname "$targetAuthorizedKeys")"
     touch "$targetAuthorizedKeys"
@@ -26,7 +29,7 @@ let
     fi
 
     chmod 600 "$targetAuthorizedKeys"
-    chown root:root "$targetAuthorizedKeys"
+    chown ${sshUser}:user "$targetAuthorizedKeys"
   '';
 in
 {
@@ -35,7 +38,7 @@ in
   };
 
   systemd.services.auth-key-file-gen = {
-    description = "Copies SOPS private key to the age key file location, if present.";
+    description = "Adds specified keys to the server's authorized SSH keys";
     wantedBy = [ "default.target" ];
 
     serviceConfig = {

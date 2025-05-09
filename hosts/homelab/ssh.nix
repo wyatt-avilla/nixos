@@ -29,7 +29,7 @@ let
     fi
 
     chmod 600 "$targetAuthorizedKeys"
-    chown ${sshUser}:user "$targetAuthorizedKeys"
+    chown ${sshUser}:users "$targetAuthorizedKeys"
   '';
 in
 {

@@ -41,7 +41,12 @@
           modules = [ ./hosts/desktop/configuration.nix ];
         };
 
-        homelab = nixpkgs.lib.nixosSystem { modules = [ ./hosts/homelab/configuration.nix ]; };
+        homelab = nixpkgs.lib.nixosSystem {
+          modules = [
+            ./hosts/homelab/configuration.nix
+            inputs.nix-secrets.nixosModules.homelab
+          ];
+        };
       };
 
       devShells.${system}.default = pkgs.mkShell {

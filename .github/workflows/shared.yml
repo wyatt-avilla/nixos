@@ -9,5 +9,5 @@ on:
 jobs:
   shared:
     uses: wyatt-avilla/nix-ci/.github/workflows/nix-ci.yml@main
-    with:
+    secrets:
       deploy_key: ${{ secrets.CI_DEPLOY_KEY }}

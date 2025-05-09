@@ -3,6 +3,7 @@
   imports = [
     ./hardware-configuration.nix
     ./sops.nix
+    ./ssh.nix
   ];
 
   nixpkgs.config.allowUnfree = true;

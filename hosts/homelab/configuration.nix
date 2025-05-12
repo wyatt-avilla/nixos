@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   imports = [
     ./hardware-configuration.nix
@@ -7,59 +12,66 @@
     ./syncthing.nix
   ];
 
-  nixpkgs.config.allowUnfree = true;
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-
-  boot.loader = {
-    systemd-boot.enable = true;
-    efi.canTouchEfiVariables = true;
+  options.storage_dir = lib.mkOption {
+    type = lib.types.str;
+    default = "/mnt/sandisk_2tb/storage";
   };
 
-  networking.hostName = "barachiel";
-  networking.networkmanager.enable = true;
-
-  time.timeZone = "America/Los_Angeles";
-
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_US.UTF-8";
-    LC_IDENTIFICATION = "en_US.UTF-8";
-    LC_MEASUREMENT = "en_US.UTF-8";
-    LC_MONETARY = "en_US.UTF-8";
-    LC_NAME = "en_US.UTF-8";
-    LC_NUMERIC = "en_US.UTF-8";
-    LC_PAPER = "en_US.UTF-8";
-    LC_TELEPHONE = "en_US.UTF-8";
-    LC_TIME = "en_US.UTF-8";
-  };
-
-  services = {
-    btrfs.autoScrub.enable = true;
-    xserver.xkb = {
-      layout = "us";
-      variant = "";
-    };
-  };
-
-  users.users.wyatt = {
-    isNormalUser = true;
-    description = "Wyatt Avilla";
-    extraGroups = [
-      "networkmanager"
-      "wheel"
+  config = {
+    nixpkgs.config.allowUnfree = true;
+    nix.settings.experimental-features = [
+      "nix-command"
+      "flakes"
     ];
-    packages = with pkgs; [ ];
+
+    boot.loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+
+    networking.hostName = "barachiel";
+    networking.networkmanager.enable = true;
+
+    time.timeZone = "America/Los_Angeles";
+
+    i18n.defaultLocale = "en_US.UTF-8";
+
+    i18n.extraLocaleSettings = {
+      LC_ADDRESS = "en_US.UTF-8";
+      LC_IDENTIFICATION = "en_US.UTF-8";
+      LC_MEASUREMENT = "en_US.UTF-8";
+      LC_MONETARY = "en_US.UTF-8";
+      LC_NAME = "en_US.UTF-8";
+      LC_NUMERIC = "en_US.UTF-8";
+      LC_PAPER = "en_US.UTF-8";
+      LC_TELEPHONE = "en_US.UTF-8";
+      LC_TIME = "en_US.UTF-8";
+    };
+
+    services = {
+      btrfs.autoScrub.enable = true;
+      xserver.xkb = {
+        layout = "us";
+        variant = "";
+      };
+    };
+
+    users.users.wyatt = {
+      isNormalUser = true;
+      description = "Wyatt Avilla";
+      extraGroups = [
+        "networkmanager"
+        "wheel"
+      ];
+      packages = with pkgs; [ ];
+    };
+
+    environment.systemPackages = with pkgs; [
+      vim
+      wget
+      git
+    ];
+
+    system.stateVersion = "24.11";
   };
-
-  environment.systemPackages = with pkgs; [
-    vim
-    wget
-    git
-  ];
-
-  system.stateVersion = "24.11";
 }

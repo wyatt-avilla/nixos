@@ -5,9 +5,6 @@
   inputs,
   ...
 }:
-let
-  syncthingDir = "/var/lib/syncthing";
-in
 {
   networking = {
     firewall.allowedTCPPorts = [ 8384 ];
@@ -25,7 +22,7 @@ in
 
       folders = {
         test_folder = {
-          path = "${syncthingDir}/test_folder";
+          path = "${config.storage_dir}/test_folder";
           devices = [ "desktop" ];
         };
       };

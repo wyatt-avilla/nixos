@@ -4,6 +4,7 @@
     ./hardware-configuration.nix
     ./sops.nix
     ./ssh.nix
+    ./syncthing.nix
   ];
 
   nixpkgs.config.allowUnfree = true;

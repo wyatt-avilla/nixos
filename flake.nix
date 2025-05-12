@@ -42,6 +42,11 @@
         };
 
         homelab = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit system;
+            inherit (self) inputs;
+          };
+
           modules = [
             ./hosts/homelab/configuration.nix
             inputs.nix-secrets.nixosModules.homelab

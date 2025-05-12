@@ -13,14 +13,10 @@
   config = {
     services.btrfs.autoScrub.enable = true;
 
-    users = {
-      groups.storage-users.members = [ "syncthing" ];
-    };
-
     systemd = {
       tmpfiles.rules = [
         "d ${config.storageDir} 0755 root root -"
-        "d ${config.storageDir}/syncthing 0770 syncthing storage-users -"
+        "d ${config.storageDir}/syncthing 0700 syncthing syncthing -"
       ];
 
       services."fix-storage-dir-perms" = {
@@ -34,8 +30,8 @@
             chown root:root "${config.storageDir}"
             chmod 0755 "${config.storageDir}"
 
-            chown syncthing:storage-users "${config.storageDir}/syncthing"
-            chmod 0770 "${config.storageDir}/syncthing"
+            chown syncthing:syncthing "${config.storageDir}/syncthing"
+            chmod 0700 "${config.storageDir}/syncthing"
           '';
         };
       };

@@ -11,6 +11,7 @@
     ./ssh.nix
     ./syncthing.nix
     ./storage.nix
+    ./filebrowser.nix
   ];
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [

@@ -64,15 +64,4 @@
   ];
 
   programs.zsh.enable = true;
-
-  security.doas = {
-    enable = true;
-    extraRules = [
-      {
-        keepEnv = true;
-        groups = [ "wheel" ];
-        noPass = true;
-      }
-    ];
-  };
 }

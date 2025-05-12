@@ -6,7 +6,7 @@
   ...
 }:
 let
-  syncthingDir = "${config.storage_dir}/syncthing";
+  syncthingDir = "${config.storageDir}/syncthing";
 in
 {
   networking = {

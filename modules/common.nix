@@ -4,10 +4,9 @@
   pkgs,
   ...
 }:
-let
-  syncthingDir = "/var/lib/syncthing/";
-in
 {
+  imports = [ ./syncthing.nix ];
+
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [
     "nix-command"
@@ -44,7 +43,6 @@ in
     extraGroups = [
       "networkmanager"
       "wheel"
-      "syncthing"
       "dialout"
     ];
     shell = pkgs.zsh;
@@ -76,23 +74,5 @@ in
         noPass = true;
       }
     ];
-  };
-
-  services.syncthing = {
-    enable = true;
-    overrideFolders = false;
-    dataDir = syncthingDir;
-    settings = {
-      devices = {
-        "ubuntu-closet" = {
-          id = "SNVTFBL-IBYKYJA-5A2ZSO6-4YDVZO5-HQUCMGS-Y7IAYFA-7A4F527-VWSLTQC";
-        };
-      };
-    };
-  };
-
-  systemd = {
-    services.syncthing.environment.STNODEFAULTFOLDER = "true";
-    tmpfiles.rules = [ "d ${syncthingDir} 0770 syncthing syncthing" ];
   };
 }

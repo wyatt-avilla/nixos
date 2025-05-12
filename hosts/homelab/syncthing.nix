@@ -9,6 +9,11 @@ let
   syncthingDir = "/var/lib/syncthing";
 in
 {
+  networking = {
+    firewall.allowedTCPPorts = [ 8384 ];
+    firewall.allowedUDPPorts = [ 8384 ];
+  };
+
   services.syncthing = {
     enable = true;
     openDefaultPorts = true;

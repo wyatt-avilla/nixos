@@ -24,8 +24,8 @@ in
       };
 
       folders = {
-        test_folder = {
-          path = "${syncthingDir}/test_folder";
+        misc = {
+          path = "${syncthingDir}/misc";
           devices = [ "desktop" ];
         };
       };

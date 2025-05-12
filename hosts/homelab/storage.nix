@@ -8,7 +8,10 @@
   config = {
     services.btrfs.autoScrub.enable = true;
 
-    users.users.syncthing.extraGroups = [ "storage-users" ];
+    users = {
+      groups.storage-users = { };
+      users.syncthing.extraGroups = [ "storage-users" ];
+    };
 
     systemd.tmpfiles.rules = [
       "d ${config.storage_dir} 0755 root root -"

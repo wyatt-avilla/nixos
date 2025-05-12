@@ -9,8 +9,7 @@
     services.btrfs.autoScrub.enable = true;
 
     users = {
-      groups.storage-users = { };
-      users.syncthing.extraGroups = [ "storage-users" ];
+      groups.storage-users.members = [ "syncthing" ];
     };
 
     systemd.tmpfiles.rules = [

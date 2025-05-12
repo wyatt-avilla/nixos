@@ -17,7 +17,7 @@ in
 
 {
   imports = [
-    ../common.nix
+    ../../modules/common.nix
     ./hardware-configuration.nix
   ];
 

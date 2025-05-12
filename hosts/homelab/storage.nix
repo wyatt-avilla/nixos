@@ -13,11 +13,18 @@
   config = {
     services.btrfs.autoScrub.enable = true;
 
+    users.groups.storage = { };
+
+    services.syncthing.group = "storage";
+    users.users.filebrowser.group = "storage";
+
     systemd = {
       tmpfiles.rules = [
-        "d ${config.storageDir} 0755 root root -"
-        "d ${config.storageDir}/syncthing 0700 syncthing syncthing -"
+        "d ${config.storageDir} 0755 root storage -"
+        "d ${config.storageDir}/syncthing 0760 syncthing storage -"
       ];
+
+      services.filebrowser.serviceConfig.group = "storage";
 
       services."fix-storage-dir-perms" = {
         description = "Ensure correct permissions for storage directories";
@@ -27,11 +34,11 @@
           Type = "oneshot";
           ExecStart = pkgs.writeShellScript "fix-storage-dir-perms" ''
             set -e
-            chown root:root "${config.storageDir}"
+            chown root:storage "${config.storageDir}"
             chmod 0755 "${config.storageDir}"
 
-            chown syncthing:syncthing "${config.storageDir}/syncthing"
-            chmod 0700 "${config.storageDir}/syncthing"
+            chown syncthing:storage "${config.storageDir}/syncthing"
+            chmod 0760 "${config.storageDir}/syncthing"
           '';
         };
       };

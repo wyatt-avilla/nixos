@@ -3,12 +3,8 @@ let
   port = 8789;
 in
 {
-  users.groups.filebrowser = { };
-
   users.users.filebrowser = {
     isSystemUser = true;
-    group = "filebrowser";
-    extraGroups = [ "syncthing" ];
   };
 
   systemd.services.filebrowser = {

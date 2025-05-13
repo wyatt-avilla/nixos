@@ -48,6 +48,11 @@ in
           path = "${syncthingDir}/books";
           devices = [ "desktop" ];
         };
+
+        notes = {
+          path = "${syncthingDir}/notes";
+          devices = [ "desktop" ];
+        };
       };
     };
   };

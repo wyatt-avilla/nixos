@@ -28,6 +28,26 @@ in
           path = "${syncthingDir}/misc";
           devices = [ "desktop" ];
         };
+
+        pictures = {
+          path = "${syncthingDir}/pictures";
+          devices = [ "desktop" ];
+        };
+
+        music = {
+          path = "${syncthingDir}/music";
+          devices = [ "desktop" ];
+        };
+
+        documents = {
+          path = "${syncthingDir}/documents";
+          devices = [ "desktop" ];
+        };
+
+        books = {
+          path = "${syncthingDir}/books";
+          devices = [ "desktop" ];
+        };
       };
     };
   };

@@ -15,13 +15,18 @@
 
     users.groups.storage = { };
 
-    services.syncthing.group = "storage";
     users.users.filebrowser.group = "storage";
+
+    services = {
+      syncthing.group = "storage";
+      immich.group = "storage";
+    };
 
     systemd = {
       tmpfiles.rules = [
         "d ${config.storageDir} 0770 root storage -"
         "d ${config.storageDir}/syncthing 0770 syncthing storage -"
+        "d ${config.storageDir}/immich 0770 immich storage -"
       ];
 
       services.filebrowser.serviceConfig.group = "storage";
@@ -39,6 +44,9 @@
 
             chown syncthing:storage "${config.storageDir}/syncthing"
             chmod 0770 "${config.storageDir}/syncthing"
+
+            chown immich:storage "${config.storageDir}/immich"
+            chmod 0770 "${config.storageDir}/immich"
           '';
         };
       };

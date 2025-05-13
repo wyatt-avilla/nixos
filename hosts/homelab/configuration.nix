@@ -12,6 +12,7 @@
     ./syncthing.nix
     ./storage.nix
     ./filebrowser.nix
+    ./immich.nix
   ];
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [

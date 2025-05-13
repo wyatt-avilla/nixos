@@ -27,6 +27,7 @@
         "d ${config.storageDir} 0770 root storage -"
         "d ${config.storageDir}/syncthing 0770 syncthing storage -"
         "d ${config.storageDir}/immich 0770 immich storage -"
+        "d ${config.storageDir}/filebrowser 0770 filebrowser storage -"
       ];
 
       services.filebrowser.serviceConfig.group = "storage";
@@ -47,6 +48,9 @@
 
             chown immich:storage "${config.storageDir}/immich"
             chmod 0770 "${config.storageDir}/immich"
+
+            chown filebrowser:storage "${config.storageDir}/filebrowser"
+            chmod 0770 "${config.storageDir}/filebrowser"
           '';
         };
       };

@@ -13,6 +13,7 @@
     ./storage.nix
     ./filebrowser.nix
     ./immich.nix
+    ./cloudflared.nix
   ];
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [

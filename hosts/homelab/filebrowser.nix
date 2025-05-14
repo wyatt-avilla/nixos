@@ -14,7 +14,7 @@ in
     wantedBy = [ "multi-user.target" ];
 
     serviceConfig = {
-      ExecStart = "${pkgs.filebrowser}/bin/filebrowser --address 0.0.0.0 --port ${builtins.toString port} --root ${rootDir} --database ${rootDir}/filebrowser.db";
+      ExecStart = "${pkgs.filebrowser}/bin/filebrowser --port ${builtins.toString port} --root ${rootDir} --database ${rootDir}/filebrowser.db";
       Restart = "always";
       User = "filebrowser";
     };

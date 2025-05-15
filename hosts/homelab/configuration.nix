@@ -59,7 +59,7 @@
       "networkmanager"
       "wheel"
     ];
-    packages = with pkgs; [ ];
+    packages = with pkgs; [ btop ];
   };
 
   environment.systemPackages = with pkgs; [

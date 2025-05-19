@@ -47,6 +47,11 @@
     packages = with pkgs; [ ];
   };
 
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
   programs.hyprland = {
     enable = true;
     withUWSM = true;

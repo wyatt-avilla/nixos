@@ -11,7 +11,10 @@
     "flakes"
   ];
 
-  boot.tmp.cleanOnBoot = true;
+  boot = {
+    tmp.cleanOnBoot = true;
+    kernelPackages = pkgs.linuxPackages_latest;
+  };
 
   networking = {
     networkmanager.enable = true;

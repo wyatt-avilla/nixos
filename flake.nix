@@ -41,6 +41,15 @@
           modules = [ ./hosts/desktop/configuration.nix ];
         };
 
+        laptop = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit system;
+            inherit (self) inputs;
+          };
+
+          modules = [ ./hosts/laptop/configuration.nix ];
+        };
+
         homelab = nixpkgs.lib.nixosSystem {
           specialArgs = {
             inherit system;

@@ -4,14 +4,13 @@
   lib,
   ...
 }:
-let
-  tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet";
-in
 {
   imports = [
     ../../modules/common.nix
     ./hardware-configuration.nix
   ];
+
+  networking.hostName = "zadkiel";
 
   boot = {
     loader.grub = {
@@ -28,10 +27,6 @@ in
     };
   };
 
-  networking.hostName = "zadkiel";
-
-  networking.networkmanager.enable = true;
-
   services = {
     xserver.xkb = {
       layout = "us";
@@ -39,26 +34,6 @@ in
     };
 
     fprintd.enable = true;
-
-    greetd = {
-      enable = true;
-      settings = {
-        default_session = {
-          command = "${tuigreet} --time --remember --remember-session --cmd '${lib.getExe pkgs.uwsm} start hyprland-uwsm.desktop > /dev/null'";
-          user = "greeter";
-        };
-      };
-    };
-  };
-
-  systemd.services.greetd.serviceConfig = {
-    Type = "idle";
-    StandardInput = "tty";
-    StandardOutput = "tty";
-    StandardError = "journal";
-    TTYReset = true;
-    TTYVHangup = true;
-    TTYVTDisallocate = true;
   };
 
   system.stateVersion = "25.05";

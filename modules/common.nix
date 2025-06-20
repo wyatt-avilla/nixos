@@ -16,6 +16,12 @@
   boot = {
     tmp.cleanOnBoot = true;
     kernelPackages = pkgs.linuxPackages_latest;
+
+    kernelParams = [
+      "console=tty2"
+      "boot.shell_on_fail"
+      "quiet"
+    ];
   };
 
   networking = {

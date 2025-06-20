@@ -20,6 +20,8 @@
       enableCryptodisk = true;
     };
 
+    kernelParams = [ "video=1366x768" ];
+
     initrd.luks.devices."luks-e9cd8227-d981-4a2b-8347-cc5a777edc68".keyFile =
       "/boot/crypto_keyfile.bin";
     initrd.secrets = {

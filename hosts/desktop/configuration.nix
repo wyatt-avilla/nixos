@@ -22,12 +22,7 @@
 
     consoleLogLevel = 0;
     initrd.verbose = false;
-    kernelParams = [
-      "console=tty2"
-      "boot.shell_on_fail"
-      "quiet"
-      "video=1920x1080"
-    ];
+    kernelParams = [ "video=1920x1080" ];
   };
 
   services = {

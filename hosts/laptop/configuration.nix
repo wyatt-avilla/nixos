@@ -25,9 +25,13 @@
 
   networking.networkmanager.enable = true;
 
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "";
+  services = {
+    xserver.xkb = {
+      layout = "us";
+      variant = "";
+    };
+
+    fprintd.enable = true;
   };
 
   system.stateVersion = "25.05";

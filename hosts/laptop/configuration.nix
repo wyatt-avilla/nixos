@@ -4,6 +4,9 @@
   lib,
   ...
 }:
+let
+  screenDimension = "1366x768";
+in
 {
   imports = [
     ../../modules/common.nix
@@ -17,15 +20,22 @@
       enable = true;
       device = "/dev/sda";
       useOSProber = false;
+      timeoutStyle = "hidden";
+      splashImage = null;
+      gfxmodeBios = screenDimension;
+      gfxpayloadBios = "keep";
       enableCryptodisk = true;
     };
 
-    kernelParams = [ "video=1366x768" ];
+    kernelParams = [ "video=${screenDimension}" ];
 
-    initrd.luks.devices."luks-e9cd8227-d981-4a2b-8347-cc5a777edc68".keyFile =
-      "/boot/crypto_keyfile.bin";
-    initrd.secrets = {
-      "/boot/crypto_keyfile.bin" = null;
+    initrd = {
+      kernelModules = [ "i915" ];
+
+      luks.devices."luks-e9cd8227-d981-4a2b-8347-cc5a777edc68".keyFile = "/boot/crypto_keyfile.bin";
+      secrets = {
+        "/boot/crypto_keyfile.bin" = null;
+      };
     };
   };
 

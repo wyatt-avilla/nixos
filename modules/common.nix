@@ -20,7 +20,6 @@
     kernelParams = [
       "console=tty2"
       "boot.shell_on_fail"
-      "quiet"
     ];
   };
 

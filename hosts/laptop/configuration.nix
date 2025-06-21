@@ -27,7 +27,10 @@ in
       enableCryptodisk = true;
     };
 
-    kernelParams = [ "video=${screenDimension}" ];
+    kernelParams = [
+      "video=${screenDimension}"
+      "iomem=relaxed"
+    ];
 
     initrd = {
       kernelModules = [ "i915" ];

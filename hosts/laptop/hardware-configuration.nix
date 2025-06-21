@@ -13,28 +13,38 @@
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
   boot = {
-    initrd.availableKernelModules = [
-      "ehci_pci"
-      "ahci"
-      "xhci_pci"
-      "usb_storage"
-      "sd_mod"
-      "sdhci_pci"
-    ];
-    initrd.kernelModules = [ ];
     kernelModules = [ "kvm-intel" ];
     extraModulePackages = [ ];
+    initrd = {
+      availableKernelModules = [
+        "ehci_pci"
+        "ahci"
+        "xhci_pci"
+        "usb_storage"
+        "sd_mod"
+        "sdhci_pci"
+      ];
+      kernelModules = [ ];
+      luks.devices."luks-e001c1a9-18a1-4ba6-86e8-1e668a0ba9af".device =
+        "/dev/disk/by-uuid/e001c1a9-18a1-4ba6-86e8-1e668a0ba9af";
+    };
   };
 
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/1b8cd407-37e4-4e2a-a0c2-faf848d7d6d4";
+    device = "/dev/disk/by-uuid/e0511881-4ff4-460b-8482-31675cf702a3";
     fsType = "ext4";
   };
 
-  boot.initrd.luks.devices."luks-e9cd8227-d981-4a2b-8347-cc5a777edc68".device =
-    "/dev/disk/by-uuid/e9cd8227-d981-4a2b-8347-cc5a777edc68";
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/5C6A-5483";
+    fsType = "vfat";
+    options = [
+      "fmask=0077"
+      "dmask=0077"
+    ];
+  };
 
-  swapDevices = [ ];
+  swapDevices = [ { device = "/dev/disk/by-uuid/8693b857-5047-43d3-8f3b-2b0c514e2a51"; } ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's

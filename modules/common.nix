@@ -18,7 +18,7 @@
     kernelPackages = pkgs.linuxPackages_latest;
 
     kernelParams = [
-      "console=tty2"
+      "quiet"
       "boot.shell_on_fail"
     ];
   };

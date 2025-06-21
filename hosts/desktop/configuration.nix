@@ -22,7 +22,10 @@
 
     consoleLogLevel = 0;
     initrd.verbose = false;
-    kernelParams = [ "video=1920x1080" ];
+    kernelParams = [
+      "video=1920x1080"
+      "console=tty2"
+    ];
   };
 
   services = {

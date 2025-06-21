@@ -16,15 +16,10 @@ in
   networking.hostName = "zadkiel";
 
   boot = {
-    loader.grub = {
-      enable = true;
-      device = "/dev/sda";
-      useOSProber = false;
-      timeoutStyle = "hidden";
-      splashImage = null;
-      gfxmodeBios = screenDimension;
-      gfxpayloadBios = "keep";
-      enableCryptodisk = true;
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+      timeout = 0;
     };
 
     kernelParams = [
@@ -35,10 +30,8 @@ in
     initrd = {
       kernelModules = [ "i915" ];
 
-      luks.devices."luks-e9cd8227-d981-4a2b-8347-cc5a777edc68".keyFile = "/boot/crypto_keyfile.bin";
-      secrets = {
-        "/boot/crypto_keyfile.bin" = null;
-      };
+      luks.devices."luks-75b4a33a-a4f4-4b61-bb4a-b6260eb04a43".device =
+        "/dev/disk/by-uuid/75b4a33a-a4f4-4b61-bb4a-b6260eb04a43";
     };
   };
 

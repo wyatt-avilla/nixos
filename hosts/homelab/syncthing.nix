@@ -20,17 +20,26 @@ in
     settings = {
       devices = {
         desktop.id = inputs.nix-secrets.nixosModules.plainSecrets.desktop.syncthing.deviceId;
+        laptop.id = inputs.nix-secrets.nixosModules.plainSecrets.laptop.syncthing.deviceId;
+        phone.id = inputs.nix-secrets.nixosModules.plainSecrets.phone.syncthing.deviceId;
+        boox.id = inputs.nix-secrets.nixosModules.plainSecrets.boox.syncthing.deviceId;
       };
 
       folders = {
         misc = {
           path = "${syncthingDir}/misc";
-          devices = [ "desktop" ];
+          devices = [
+            "desktop"
+            "laptop"
+          ];
         };
 
         pictures = {
           path = "${syncthingDir}/pictures";
-          devices = [ "desktop" ];
+          devices = [
+            "desktop"
+            "laptop"
+          ];
         };
 
         music = {
@@ -40,17 +49,28 @@ in
 
         documents = {
           path = "${syncthingDir}/documents";
-          devices = [ "desktop" ];
+          devices = [
+            "desktop"
+            "laptop"
+          ];
         };
 
         books = {
           path = "${syncthingDir}/books";
-          devices = [ "desktop" ];
+          devices = [
+            "desktop"
+            "boox"
+          ];
         };
 
         notes = {
           path = "${syncthingDir}/notes";
-          devices = [ "desktop" ];
+          devices = [
+            "desktop"
+            "laptop"
+            "boox"
+            "phone"
+          ];
         };
       };
     };

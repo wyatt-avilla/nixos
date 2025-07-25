@@ -40,7 +40,7 @@ in
               service = "http://localhost:8789";
             };
             "bin.wyatt.wtf" = {
-              service = "http://localhost";
+              service = "http://localhost:80";
             };
           };
           default = "http_status:404";

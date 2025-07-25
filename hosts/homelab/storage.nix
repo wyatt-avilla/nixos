@@ -15,11 +15,10 @@
 
     users.groups.storage = { };
 
-    users.users.filebrowser.group = "storage";
-
     services = {
       syncthing.group = "storage";
       immich.group = "storage";
+      filebrowser.group = "storage";
     };
 
     systemd = {

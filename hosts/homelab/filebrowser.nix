@@ -1,24 +1,14 @@
-{ pkgs, config, ... }:
+{ config, ... }:
 let
-  port = 8789;
   rootDir = "${config.storageDir}/filebrowser";
 in
 {
-  users.users.filebrowser = {
-    isSystemUser = true;
-  };
-
-  systemd.services.filebrowser = {
-    description = "Filebrowser Web UI";
-    after = [ "network.target" ];
-    wantedBy = [ "multi-user.target" ];
-
-    serviceConfig = {
-      ExecStart = "${pkgs.filebrowser}/bin/filebrowser --port ${builtins.toString port} --root ${rootDir} --database ${rootDir}/filebrowser.db";
-      Restart = "always";
-      User = "filebrowser";
+  services.filebrowser = {
+    enable = true;
+    openFirewall = true;
+    settings = {
+      port = 8789;
+      root = rootDir;
     };
   };
-
-  networking.firewall.allowedTCPPorts = [ port ];
 }

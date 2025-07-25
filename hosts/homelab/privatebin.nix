@@ -7,6 +7,7 @@ in
     enable = true;
     dataDir = dir;
     enableNginx = true;
+    virtualHost = "0.0.0.0";
 
     settings = {
       main = {

@@ -39,4 +39,7 @@ in
       model_options = { inherit dir; };
     };
   };
+
+  users.users.privatebin.extraGroups = [ "nginx" ];
+
 }

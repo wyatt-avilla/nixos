@@ -14,6 +14,7 @@
     ./filebrowser.nix
     ./immich.nix
     ./privatebin.nix
+    ./microbin.nix
     ./cloudflared.nix
   ];
   nixpkgs.config.allowUnfree = true;

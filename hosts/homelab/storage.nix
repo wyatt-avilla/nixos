@@ -19,6 +19,7 @@
       syncthing.group = "storage";
       immich.group = "storage";
       filebrowser.group = "storage";
+      privatebin.group = "storage";
     };
 
     systemd = {
@@ -27,9 +28,8 @@
         "d ${config.storageDir}/syncthing 0770 syncthing storage -"
         "d ${config.storageDir}/immich 0770 immich storage -"
         "d ${config.storageDir}/filebrowser 0770 filebrowser storage -"
+        "d ${config.storageDir}/privatebin 0770 privatebin storage -"
       ];
-
-      services.filebrowser.serviceConfig.group = "storage";
 
       services."fix-storage-dir-perms" = {
         description = "Ensure correct permissions for storage directories";
@@ -50,6 +50,9 @@
 
             chown filebrowser:storage "${config.storageDir}/filebrowser"
             chmod 0770 "${config.storageDir}/filebrowser"
+
+            chown privatebin:storage "${config.storageDir}/privatebin"
+            chmod 0770 "${config.storageDir}/privatebin"
           '';
         };
       };

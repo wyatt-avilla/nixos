@@ -22,6 +22,8 @@
       privatebin.group = "storage";
     };
 
+    users.users.nginx.extraGroups = [ "storage" ];
+
     systemd = {
       tmpfiles.rules = [
         "d ${config.storageDir} 0770 root storage -"

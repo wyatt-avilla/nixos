@@ -7,7 +7,7 @@ in
     enable = true;
     dataDir = dir;
     enableNginx = true;
-    virtualHost = "0.0.0.0";
+    virtualHost = config.variables.localip;
 
     settings = {
       main = {
@@ -41,5 +41,8 @@ in
   };
 
   users.users.privatebin.extraGroups = [ "nginx" ];
-
+  networking.firewall.allowedTCPPorts = [
+    80
+    443
+  ];
 }

@@ -1,4 +1,9 @@
-{ pkgs, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 let
   cloudflaredCredentialsSecretFile = "${config.variables.secretsDirectory}/cloudflared-credentials";
 
@@ -16,31 +21,41 @@ let
   '';
 in
 {
-  services.cloudflared = {
-    enable = true;
-    tunnels = {
-      "homelab" = {
-        inherit credentialsFile;
-        ingress = {
-          "immich.wyatt.wtf" = {
-            service = "http://localhost:2283";
-          };
-          "filebrowser.wyatt.wtf" = {
-            service = "http://localhost:8789";
-          };
-        };
-        default = "http_status:404";
-      };
-    };
+  options.variables.localip = lib.mkOption {
+    type = lib.types.str;
+    default = "10.0.5.69";
   };
 
-  systemd.services.copy-cloudflared-credentials = {
-    description = "Copies decrypted cloudflared credentials file into expected location";
-    wantedBy = [ "multi-user.target" ];
+  config = {
+    services.cloudflared = {
+      enable = true;
+      tunnels = {
+        "homelab" = {
+          inherit credentialsFile;
+          ingress = {
+            "immich.wyatt.wtf" = {
+              service = "http://localhost:2283";
+            };
+            "filebrowser.wyatt.wtf" = {
+              service = "http://localhost:8789";
+            };
+            "bin.wyatt.wtf" = {
+              service = "http://localhost";
+            };
+          };
+          default = "http_status:404";
+        };
+      };
+    };
 
-    serviceConfig = {
-      ExecStart = "${copyCloudflaredCredentials}/bin/copy-cloudflared-credentials";
-      Type = "oneshot";
+    systemd.services.copy-cloudflared-credentials = {
+      description = "Copies decrypted cloudflared credentials file into expected location";
+      wantedBy = [ "multi-user.target" ];
+
+      serviceConfig = {
+        ExecStart = "${copyCloudflaredCredentials}/bin/copy-cloudflared-credentials";
+        Type = "oneshot";
+      };
     };
   };
 }

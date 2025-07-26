@@ -13,7 +13,6 @@
     ./storage.nix
     ./filebrowser.nix
     ./immich.nix
-    ./privatebin.nix
     ./microbin.nix
     ./cloudflared.nix
   ];

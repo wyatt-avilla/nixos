@@ -19,11 +19,9 @@
       syncthing.group = "storage";
       immich.group = "storage";
       filebrowser.group = "storage";
-      privatebin.group = "storage";
     };
 
     users.users = {
-      nginx.extraGroups = [ "storage" ];
       microbin.extraGroups = [ "storage" ];
     };
 
@@ -33,7 +31,6 @@
         "d ${config.storageDir}/syncthing 0770 syncthing storage -"
         "d ${config.storageDir}/immich 0770 immich storage -"
         "d ${config.storageDir}/filebrowser 0770 filebrowser storage -"
-        "d ${config.storageDir}/privatebin 0770 privatebin storage -"
         "d ${config.storageDir}/microbin 0770 microbin storage -"
       ];
 
@@ -56,9 +53,6 @@
 
             chown filebrowser:storage "${config.storageDir}/filebrowser"
             chmod 0770 "${config.storageDir}/filebrowser"
-
-            chown privatebin:storage "${config.storageDir}/privatebin"
-            chmod 0770 "${config.storageDir}/privatebin"
 
             chown microbin:storage "${config.storageDir}/microbin"
             chmod 0770 "${config.storageDir}/microbin"

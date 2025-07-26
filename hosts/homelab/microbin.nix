@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, lib, ... }:
 let
   port = 2233;
   dir = "${config.storageDir}/microbin";
@@ -25,6 +25,7 @@ in
 
   systemd.services.microbin = {
     serviceConfig = {
+      DynamicUser = lib.mkForce false;
       User = "microbin";
       Group = "microbin";
     };

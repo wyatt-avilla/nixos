@@ -39,13 +39,13 @@ in
           inherit credentialsFile;
           ingress = {
             "immich.${config.variables.domain}" = {
-              service = "http://localhost:2283";
+              service = "http://localhost:${builtins.toString config.services.immich.port}";
             };
             "filebrowser.${config.variables.domain}" = {
-              service = "http://localhost:8789";
+              service = "http://localhost:${builtins.toString config.services.filebrowser.settings.port}";
             };
             "bin.${config.variables.domain}" = {
-              service = "http://localhost:2233";
+              service = "http://localhost:${builtins.toString config.services.microbin.settings.MICROBIN_PORT}";
             };
           };
           default = "http_status:404";

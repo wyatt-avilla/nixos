@@ -34,6 +34,7 @@
         "d ${config.storageDir}/immich 0770 immich storage -"
         "d ${config.storageDir}/filebrowser 0770 filebrowser storage -"
         "d ${config.storageDir}/privatebin 0770 privatebin storage -"
+        "d ${config.storageDir}/microbin 0770 microbin storage -"
       ];
 
       services."fix-storage-dir-perms" = {
@@ -58,6 +59,9 @@
 
             chown privatebin:storage "${config.storageDir}/privatebin"
             chmod 0770 "${config.storageDir}/privatebin"
+
+            chown microbin:storage "${config.storageDir}/microbin"
+            chmod 0770 "${config.storageDir}/microbin"
           '';
         };
       };

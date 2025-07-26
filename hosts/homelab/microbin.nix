@@ -16,4 +16,17 @@ in
       MICROBIN_HIDE_FOOTER = true;
     };
   };
+
+  users.groups.microbin = { };
+  users.users.microbin = {
+    isSystemUser = true;
+    group = "microbin";
+  };
+
+  systemd.services.microbin = {
+    serviceConfig = {
+      User = "microbin";
+      Group = "microbin";
+    };
+  };
 }

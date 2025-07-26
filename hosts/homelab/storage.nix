@@ -22,7 +22,10 @@
       privatebin.group = "storage";
     };
 
-    users.users.nginx.extraGroups = [ "storage" ];
+    users.users = {
+      nginx.extraGroups = [ "storage" ];
+      microbin.extraGroups = [ "storage" ];
+    };
 
     systemd = {
       tmpfiles.rules = [

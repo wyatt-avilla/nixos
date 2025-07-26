@@ -14,6 +14,12 @@ in
       MICROBIN_HIGHLIGHTSYNTAX = true;
       MICROBIN_HIDE_HEADER = true;
       MICROBIN_HIDE_FOOTER = true;
+      MICROBIN_PRIVATE = true;
+      MICROBIN_QR = true;
+      MICROBIN_ETERNAL_PASTA = true;
+      MICROBIN_MAX_FILE_SIZE_ENCRYPTED_MB = 1000 * 10;
+      MICROBIN_MAX_FILE_SIZE_UNENCRYPTED_MB = 1000 * 10;
+      MICROBIN_PUBLIC_PATH = "https://bin.${config.variables.domain}";
     };
   };
 

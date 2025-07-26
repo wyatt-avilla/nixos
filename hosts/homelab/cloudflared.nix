@@ -26,6 +26,11 @@ in
     default = "10.0.5.69";
   };
 
+  options.variables.domain = lib.mkOption {
+    type = lib.types.str;
+    default = "wyatt.wtf";
+  };
+
   config = {
     services.cloudflared = {
       enable = true;
@@ -33,13 +38,13 @@ in
         "homelab" = {
           inherit credentialsFile;
           ingress = {
-            "immich.wyatt.wtf" = {
+            "immich.${config.variables.domain}" = {
               service = "http://localhost:2283";
             };
-            "filebrowser.wyatt.wtf" = {
+            "filebrowser.${config.variables.domain}" = {
               service = "http://localhost:8789";
             };
-            "bin.wyatt.wtf" = {
+            "bin.${config.variables.domain}" = {
               service = "http://localhost:2233";
             };
           };

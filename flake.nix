@@ -9,6 +9,11 @@
       url = "git+ssh://git@github.com/wyatt-avilla/nix-secrets";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-checks = {
+      url = "git+ssh://git@github.com/wyatt-avilla/nix-ci";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -16,6 +21,7 @@
       self,
       nixpkgs,
       nix-secrets,
+      nix-checks,
       ...
     }:
     let
@@ -72,6 +78,23 @@
         shellHook = ''
           pre-commit install
         '';
+      };
+
+      checks.${system} = {
+        formatting = nix-checks.lib.mkFormattingCheck {
+          inherit pkgs;
+          src = self;
+        };
+
+        linting = nix-checks.lib.mkLintingCheck {
+          inherit pkgs;
+          src = self;
+        };
+
+        dead-code = nix-checks.lib.mkDeadCodeCheck {
+          inherit pkgs;
+          src = self;
+        };
       };
     };
 }

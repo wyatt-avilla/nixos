@@ -348,6 +348,26 @@
         "type": "github"
       }
     },
+    "nix-checks": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1753764242,
+        "narHash": "sha256-dhoA9pnMppaCJO5tzNQaTDV9mQEaL9ijgSRRxDibYKY=",
+        "ref": "refs/heads/main",
+        "rev": "9ef2f997abc1fa03c4e18de0dd3a35858dd9f5e8",
+        "revCount": 30,
+        "type": "git",
+        "url": "ssh://git@github.com/wyatt-avilla/nix-ci"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/wyatt-avilla/nix-ci"
+      }
+    },
     "nix-secrets": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -444,6 +464,7 @@
     "root": {
       "inputs": {
         "hyprland": "hyprland",
+        "nix-checks": "nix-checks",
         "nix-secrets": "nix-secrets",
         "nixpkgs": "nixpkgs_3"
       }

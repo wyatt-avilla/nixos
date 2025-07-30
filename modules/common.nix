@@ -16,9 +16,13 @@
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
+      timeout = 0;
     };
 
-    kernelParams = [ "boot.shell_on_fail" ];
+    kernelParams = [
+      "boot.shell_on_fail"
+      "quiet"
+    ];
   };
 
   networking.networkmanager.enable = true;

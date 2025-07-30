@@ -17,11 +17,4 @@
   users.users.wyatt = {
     extraGroups = [ "dialout" ];
   };
-
-  boot = {
-    kernelParams = [
-      "console=tty2"
-      "quiet"
-    ];
-  };
 }

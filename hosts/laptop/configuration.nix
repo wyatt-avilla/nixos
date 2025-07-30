@@ -1,29 +1,15 @@
 {
-  config,
-  pkgs,
-  lib,
-  ...
-}:
-let
-  screenDimension = "1366x768";
-in
-{
   imports = [
     ../../modules/common.nix
+    ../../modules/gui_common.nix
     ./hardware-configuration.nix
   ];
 
   networking.hostName = "zadkiel";
 
   boot = {
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-      timeout = 0;
-    };
-
     kernelParams = [
-      "video=${screenDimension}"
+      "video=1366x768"
       "iomem=relaxed"
     ];
 
@@ -36,11 +22,6 @@ in
   };
 
   services = {
-    xserver.xkb = {
-      layout = "us";
-      variant = "";
-    };
-
     fprintd.enable = true;
 
     tlp = {

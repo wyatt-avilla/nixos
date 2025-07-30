@@ -1,9 +1,4 @@
-{
-  lib,
-  pkgs,
-  config,
-  ...
-}:
+{ pkgs, config, ... }:
 let
   sshUser = "wyatt";
   sshUserHome = config.users.users.${sshUser}.home;

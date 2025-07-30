@@ -1,10 +1,4 @@
-{
-  inputs,
-  config,
-  pkgs,
-  lib,
-  ...
-}:
+{ pkgs, lib, ... }:
 let
   tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet";
 in

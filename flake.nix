@@ -33,7 +33,6 @@
           allowUnfree = true;
         };
       };
-
     in
     {
       nixosConfigurations = {

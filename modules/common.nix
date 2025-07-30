@@ -1,12 +1,5 @@
+{ pkgs, ... }:
 {
-  inputs,
-  config,
-  pkgs,
-  ...
-}:
-{
-  imports = [ ./login.nix ];
-
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [
     "nix-command"
@@ -17,17 +10,18 @@
     tmp.cleanOnBoot = true;
     kernelPackages = pkgs.linuxPackages_latest;
 
-    kernelParams = [
-      "quiet"
-      "boot.shell_on_fail"
-    ];
+    consoleLogLevel = 0;
+    initrd.verbose = false;
+
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+
+    kernelParams = [ "boot.shell_on_fail" ];
   };
 
-  networking = {
-    networkmanager.enable = true;
-    firewall.allowedTCPPorts = [ 57621 ]; # spotify local files
-    firewall.allowedUDPPorts = [ 5353 ]; # spotify cast
-  };
+  networking.networkmanager.enable = true;
 
   time.timeZone = "America/Los_Angeles";
 
@@ -45,16 +39,22 @@
     LC_TIME = "en_US.UTF-8";
   };
 
+  services = {
+    xserver.xkb = {
+      layout = "us";
+      variant = "";
+    };
+  };
+
   users.users.wyatt = {
     isNormalUser = true;
     description = "Wyatt Avilla";
     extraGroups = [
       "networkmanager"
       "wheel"
-      "dialout"
     ];
     shell = pkgs.zsh;
-    packages = with pkgs; [ ];
+    packages = [ ];
   };
 
   hardware.graphics = {
@@ -62,15 +62,9 @@
     enable32Bit = true;
   };
 
-  programs.hyprland = {
-    enable = true;
-    withUWSM = true;
-  };
-
   environment.systemPackages = with pkgs; [
     wget
     git
-    home-manager
   ];
 
   programs.zsh.enable = true;

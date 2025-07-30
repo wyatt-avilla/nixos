@@ -1,10 +1,4 @@
-{
-  lib,
-  pkgs,
-  config,
-  inputs,
-  ...
-}:
+{ config, inputs, ... }:
 let
   syncthingDir = "${config.storageDir}/syncthing";
 in

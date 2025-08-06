@@ -8,11 +8,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1754444635,
-        "narHash": "sha256-Qfl2Zcx2lHRiOmysuBeX/7oTTVupwxJK23dy9wvSmSo=",
+        "lastModified": 1754451176,
+        "narHash": "sha256-tTbf3q4oCv+OhKN1JppIp/sZJ2RWnWIkfg/awNhoDRk=",
         "owner": "wyatt-avilla",
         "repo": "claude-discord-bot",
-        "rev": "1f504b14afce722c6b4edbc25c4f36cd42bdc053",
+        "rev": "00e8f3c843b176b207c0c8e1e79a5bae508386f0",
         "type": "github"
       },
       "original": {

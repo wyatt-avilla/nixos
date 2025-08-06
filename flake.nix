@@ -13,6 +13,10 @@
       url = "git+ssh://git@github.com/wyatt-avilla/nix-ci";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    claude-discord-bot = {
+      url = "github:wyatt-avilla/claude-discord-bot";
+    };
   };
 
   outputs =

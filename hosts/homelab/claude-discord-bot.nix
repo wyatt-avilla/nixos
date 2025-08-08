@@ -8,7 +8,7 @@
 let
   claude-discord-bot-token = "${config.variables.secretsDirectory}/claude-discord-bot-token";
 
-  tokenFile = "/etc/claude-discord-bot/discord-token";
+  tokenFile = "/var/lib/claude-discord-bot/discord-token";
   botGroup = config.systemd.services.claude-discord-bot.serviceConfig.Group;
   botUser = config.systemd.services.claude-discord-bot.serviceConfig.User;
 

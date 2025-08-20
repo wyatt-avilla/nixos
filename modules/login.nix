@@ -1,6 +1,6 @@
 { pkgs, lib, ... }:
 let
-  tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet";
+  tuigreet = lib.getExe pkgs.tuigreet;
 in
 {
   services.greetd = {

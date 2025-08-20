@@ -8,11 +8,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1754694017,
-        "narHash": "sha256-HpiVz9uzbqO/MLMmFk2tKyT/CvULMTe8Rl2BpY/RCZI=",
+        "lastModified": 1754702511,
+        "narHash": "sha256-ePhE2T5kEL8wtgz7AtUfkpsvmKvBKjZzAtvFPGg94fA=",
         "owner": "wyatt-avilla",
         "repo": "claude-discord-bot",
-        "rev": "db94032370020108f71eed53d3d3574990af9443",
+        "rev": "f49e3c1e1654f9a44dbea308b552f39172416b2c",
         "type": "github"
       },
       "original": {
@@ -192,11 +192,11 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1753549186,
-        "narHash": "sha256-Znl7rzuxKg/Mdm6AhimcKynM7V3YeNDIcLjBuoBcmNs=",
+        "lastModified": 1755186698,
+        "narHash": "sha256-wNO3+Ks2jZJ4nTHMuks+cxAiVBGNuEBXsT29Bz6HASo=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "17f6bd177404d6d43017595c5264756764444ab8",
+        "rev": "fbcf476f790d8a217c3eab4e12033dc4a0f6d23c",
         "type": "github"
       },
       "original": {

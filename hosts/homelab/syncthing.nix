@@ -3,15 +3,14 @@ let
   syncthingDir = "${config.storageDir}/syncthing";
 in
 {
-  networking = {
-    firewall.allowedTCPPorts = [ 8384 ];
-    firewall.allowedUDPPorts = [ 8384 ];
-  };
-
   services.syncthing = {
     enable = true;
     openDefaultPorts = true;
     settings = {
+      gui = {
+        insecureSkipHostcheck = true;
+      };
+
       devices = {
         desktop.id = inputs.nix-secrets.nixosModules.plainSecrets.desktop.syncthing.deviceId;
         laptop.id = inputs.nix-secrets.nixosModules.plainSecrets.laptop.syncthing.deviceId;

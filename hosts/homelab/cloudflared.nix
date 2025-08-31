@@ -47,6 +47,9 @@ in
             "bin.${config.variables.domain}" = {
               service = "http://localhost:${builtins.toString config.services.microbin.settings.MICROBIN_PORT}";
             };
+            "syncthing.${config.variables.domain}" = {
+              service = "http://${builtins.toString config.services.syncthing.guiAddress}";
+            };
           };
           default = "http_status:404";
         };

@@ -32,7 +32,7 @@ in
   };
 
   systemd.services.copy-discord-token = {
-    description = "Copies decrypted Cluade Discord bot token into expected location";
+    description = "Copies decrypted Claude Discord bot token into expected location";
     wantedBy = [ "claude-discord-bot.service" ];
     before = [ "claude-discord-bot.service" ];
 

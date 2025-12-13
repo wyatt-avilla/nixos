@@ -1,6 +1,9 @@
 { pkgs, ... }:
 {
-  imports = [ ./login.nix ];
+  imports = [
+    ./login.nix
+    ./docker.nix
+  ];
 
   environment.systemPackages = with pkgs; [ home-manager ];
 

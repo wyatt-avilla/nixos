@@ -17,6 +17,10 @@
     claude-discord-bot = {
       url = "github:wyatt-avilla/claude-discord-bot";
     };
+
+    wyattwtf = {
+      url = "github:wyatt-avilla/wyatt.wtf";
+    };
   };
 
   outputs =

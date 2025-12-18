@@ -38,6 +38,12 @@ in
         "homelab" = {
           inherit credentialsFile;
           ingress = {
+            ${config.variables.domain} = {
+              service = "http://localhost:${builtins.toString config.services.wyattwtf.port}";
+            };
+            "www.${config.variables.domain}" = {
+              service = "http://localhost:${builtins.toString config.services.wyattwtf.port}";
+            };
             "immich.${config.variables.domain}" = {
               service = "http://localhost:${builtins.toString config.services.immich.port}";
             };

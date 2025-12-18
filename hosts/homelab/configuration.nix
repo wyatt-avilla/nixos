@@ -12,6 +12,7 @@
     ./microbin.nix
     ./cloudflared.nix
     ./claude-discord-bot.nix
+    ./wyattwtf.nix
   ];
 
   networking.hostName = "barachiel";

@@ -5,6 +5,7 @@
   sops.secrets.claude-discord-bot-token = {
     owner = config.systemd.services.claude-discord-bot.serviceConfig.User;
     group = config.systemd.services.claude-discord-bot.serviceConfig.Group;
+    path = "/var/lib/claude-discord-bot/discord-token.secret";
     mode = "0400";
   };
 

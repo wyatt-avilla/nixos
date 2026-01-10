@@ -2,9 +2,8 @@
 {
   imports = [
     ../../modules/common.nix
+    ../../modules/server_common
     ./hardware-configuration.nix
-    ./sops.nix
-    ./ssh.nix
     ./syncthing.nix
     ./storage.nix
     ./filebrowser.nix

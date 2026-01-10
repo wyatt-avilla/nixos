@@ -3,6 +3,7 @@
   imports = [
     ../../modules/common.nix
     ./hardware-configuration.nix
+    ../../modules/server_common
   ];
 
   networking.hostName = "ambriel";

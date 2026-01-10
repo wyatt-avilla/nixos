@@ -6,6 +6,8 @@
     ../../modules/common.nix
   ];
 
+  networking.hostName = "ambriel";
+
   boot.loader = {
     systemd-boot.enable = lib.mkForce false;
     efi.canTouchEfiVariables = lib.mkForce false;

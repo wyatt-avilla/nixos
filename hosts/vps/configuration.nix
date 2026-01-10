@@ -1,6 +1,9 @@
 { pkgs, ... }:
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [
+    ../../modules/common.nix
+    ./hardware-configuration.nix
+  ];
 
   networking.hostName = "ambriel";
 

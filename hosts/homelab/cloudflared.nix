@@ -8,11 +8,6 @@ in
     default = "10.0.5.69";
   };
 
-  options.variables.domain = lib.mkOption {
-    type = lib.types.str;
-    default = "wyatt.wtf";
-  };
-
   config = {
     services.cloudflared = {
       enable = true;

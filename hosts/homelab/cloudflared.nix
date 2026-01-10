@@ -16,22 +16,22 @@ in
           inherit credentialsFile;
           ingress = {
             ${config.variables.domain} = {
-              service = "http://localhost:${builtins.toString config.services.wyattwtf.port}";
+              service = "http://localhost:${toString config.services.wyattwtf.port}";
             };
             "www.${config.variables.domain}" = {
-              service = "http://localhost:${builtins.toString config.services.wyattwtf.port}";
+              service = "http://localhost:${toString config.services.wyattwtf.port}";
             };
             "immich.${config.variables.domain}" = {
-              service = "http://localhost:${builtins.toString config.services.immich.port}";
+              service = "http://localhost:${toString config.services.immich.port}";
             };
             "filebrowser.${config.variables.domain}" = {
-              service = "http://localhost:${builtins.toString config.services.filebrowser.settings.port}";
+              service = "http://localhost:${toString config.services.filebrowser.settings.port}";
             };
             "bin.${config.variables.domain}" = {
-              service = "http://localhost:${builtins.toString config.services.microbin.settings.MICROBIN_PORT}";
+              service = "http://localhost:${toString config.services.microbin.settings.MICROBIN_PORT}";
             };
             "syncthing.${config.variables.domain}" = {
-              service = "http://${builtins.toString config.services.syncthing.guiAddress}";
+              service = "http://${toString config.services.syncthing.guiAddress}";
             };
           };
           default = "http_status:404";

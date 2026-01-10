@@ -73,6 +73,18 @@
             inputs.nix-secrets.nixosModules.homelab
           ];
         };
+
+        vps = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit system;
+            inherit (self) inputs;
+          };
+
+          modules = [
+            ./hosts/vps/configuration.nix
+            inputs.nix-secrets.nixosModules.vps
+          ];
+        };
       };
 
       devShells.${system}.default = pkgs.mkShell {

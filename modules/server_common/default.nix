@@ -1,9 +1,16 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 {
   imports = [
     ./ssh.nix
     ./sops.nix
   ];
 
-  environment.systemPackages = with pkgs; [ btop ];
+  config = {
+    environment.systemPackages = with pkgs; [ btop ];
+  };
+
+  options.variables.domain = lib.mkOption {
+    type = lib.types.str;
+    default = "wyatt.wtf";
+  };
 }

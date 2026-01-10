@@ -1,27 +1,8 @@
-{
-  config,
-  inputs,
-  lib,
-  pkgs,
-  ...
-}:
+{ config, inputs, ... }:
 let
-  claude-discord-bot-token = "${config.variables.secretsDirectory}/claude-discord-bot-token";
-
   tokenFile = "/var/lib/claude-discord-bot/discord-token";
   botGroup = config.systemd.services.claude-discord-bot.serviceConfig.Group;
   botUser = config.systemd.services.claude-discord-bot.serviceConfig.User;
-
-  copyToken = pkgs.writeShellScriptBin "copy-claude-discord-bot-token" ''
-    set -euo pipefail
-
-    echo "[Claude Discord bot setup] Copying credentials to ${tokenFile}"
-
-    install -Dm400 "${claude-discord-bot-token}" "${tokenFile}"
-
-    chown "${botUser}":"${botGroup}" "${tokenFile}"
-    echo "[Claude Discord bot setup] Credentials installed with '''${botUser}:${botGroup}''' ownership and 400 perms"
-  '';
 in
 {
   imports = [ inputs.claude-discord-bot.nixosModules.claude-discord-bot ];
@@ -31,14 +12,13 @@ in
     discordTokenFile = tokenFile;
   };
 
-  systemd.services.copy-discord-token = {
-    description = "Copies decrypted Claude Discord bot token into expected location";
-    wantedBy = [ "claude-discord-bot.service" ];
+  systemd.services = config.secrets.mkCopyService {
+    name = "claude-discord-bot-token";
+    source = "${config.variables.secretsDirectory}/claude-discord-bot-token";
+    dest = tokenFile;
+    user = botUser;
+    group = botGroup;
     before = [ "claude-discord-bot.service" ];
-
-    serviceConfig = {
-      ExecStart = lib.getExe copyToken;
-      Type = "oneshot";
-    };
+    wantedBy = [ "claude-discord-bot.service" ];
   };
 }

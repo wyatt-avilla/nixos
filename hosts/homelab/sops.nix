@@ -14,12 +14,49 @@ let
       cp -f "${sopsPrivateKey}" "${keyFile}"
     fi
   '';
+
+  mkSecretsCopyService =
+    {
+      name,
+      source,
+      dest,
+      user ? "root",
+      group ? "root",
+      mode ? "400",
+      wantedBy ? [ "multi-user.target" ],
+      before ? [ ],
+    }:
+    let
+      copyScript = pkgs.writeShellScriptBin "copy-secret-${name}" ''
+        set -euo pipefail
+        echo "[${name}] Copying ${source} to ${dest}"
+        install -Dm${mode} "${source}" "${dest}"
+        chown "${user}":"${group}" "${dest}"
+        echo "[${name}] Credentials installed with ${user}:${group} ownership and ${mode} perms"
+      '';
+    in
+    {
+      "copy-secret-${name}" = {
+        description = "Copies decrypted ${name} secret to ${dest}";
+        inherit wantedBy before;
+        serviceConfig = {
+          ExecStart = lib.getExe copyScript;
+          Type = "oneshot";
+        };
+      };
+    };
 in
 {
   options.variables.secretsDirectory = lib.mkOption {
     type = lib.types.str;
     default = "/run/secrets";
     description = "Decrypted SOPS secrets directory";
+  };
+
+  options.secrets.mkCopyService = lib.mkOption {
+    type = lib.types.unspecified;
+    default = mkSecretsCopyService;
+    description = "Helper function to create a systemd oneshot service that copies a secret file to a destination with specified ownership and permissions";
   };
 
   config = {

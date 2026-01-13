@@ -4,6 +4,7 @@
     ./hardware-configuration.nix
     ../../modules/server_common
     ../../modules/common.nix
+    ./wireguard.nix
   ];
 
   networking.hostName = "ambriel";

@@ -12,6 +12,7 @@
     ./cloudflared.nix
     ./claude-discord-bot.nix
     ./wyattwtf.nix
+    ./wireguard.nix
   ];
 
   networking.hostName = "barachiel";

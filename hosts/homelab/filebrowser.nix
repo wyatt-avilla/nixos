@@ -7,6 +7,7 @@ in
     enable = true;
     openFirewall = true;
     settings = {
+      address = config.variables.homelab.wireguard.ip;
       port = 8789;
       root = rootDir;
     };

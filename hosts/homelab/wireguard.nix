@@ -1,25 +1,31 @@
 { inputs, config, ... }:
 let
   privateKeyFile = "/etc/wireguard/private.key";
+
+  wgInterface = "wg0";
 in
 {
-  networking.wireguard.interfaces = {
-    wg0 = {
-      ips = [ "${config.variables.homelab.wireguard.ip}/24" ];
+  networking = {
+    trustedInterfaces = [ wgInterface ];
 
-      inherit privateKeyFile;
+    wireguard.interfaces = {
+      ${wgInterface} = {
+        ips = [ "${config.variables.homelab.wireguard.ip}/24" ];
 
-      peers = [
-        {
-          inherit (inputs.nix-secrets.nixosModules.plainSecrets.vps.wireguard) publicKey;
+        inherit privateKeyFile;
 
-          endpoint = "${config.variables.vps.publicIp}:${toString config.variables.vps.wireguard.port}";
+        peers = [
+          {
+            inherit (inputs.nix-secrets.nixosModules.plainSecrets.vps.wireguard) publicKey;
 
-          allowedIPs = [ "10.0.0.0/24" ];
+            endpoint = "${config.variables.vps.publicIp}:${toString config.variables.vps.wireguard.port}";
 
-          persistentKeepalive = 25;
-        }
-      ];
+            allowedIPs = [ "10.0.0.0/24" ];
+
+            persistentKeepalive = 25;
+          }
+        ];
+      };
     };
   };
 

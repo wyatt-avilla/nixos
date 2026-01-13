@@ -4,21 +4,21 @@ let
 in
 {
   networking.firewall = {
-    allowedUDPPorts = [ 51820 ];
+    allowedUDPPorts = [ config.variables.vps.wireguard.port ];
   };
 
   networking.wireguard.interfaces = {
     wg0 = {
-      ips = [ "10.0.0.1/24" ];
+      ips = [ "${config.variables.vps.wireguard.ip}/24" ];
 
-      listenPort = 51820;
+      listenPort = config.variables.vps.wireguard.port;
 
       inherit privateKeyFile;
 
       peers = [
         {
           inherit (inputs.nix-secrets.nixosModules.plainSecrets.homelab.wireguard) publicKey;
-          allowedIPs = [ "10.0.0.2/32" ];
+          allowedIPs = [ "${config.variables.homelab.wireguard.ip}/32" ];
         }
       ];
     };

@@ -5,7 +5,7 @@ in
 {
   networking.wireguard.interfaces = {
     wg0 = {
-      ips = [ "10.0.0.2/24" ];
+      ips = [ "${config.variables.homelab.wireguard.ip}/24" ];
 
       inherit privateKeyFile;
 
@@ -13,7 +13,7 @@ in
         {
           inherit (inputs.nix-secrets.nixosModules.plainSecrets.vps.wireguard) publicKey;
 
-          endpoint = "134.199.142.228:51820";
+          endpoint = "${config.variables.vps.publicIp}:${toString config.variables.vps.wireguard.port}";
 
           allowedIPs = [ "10.0.0.0/24" ];
 

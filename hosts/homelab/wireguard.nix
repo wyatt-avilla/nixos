@@ -6,7 +6,7 @@ let
 in
 {
   networking = {
-    trustedInterfaces = [ wgInterface ];
+    firewall.trustedInterfaces = [ wgInterface ];
 
     wireguard.interfaces = {
       ${wgInterface} = {

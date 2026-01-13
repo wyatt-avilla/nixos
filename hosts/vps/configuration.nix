@@ -5,6 +5,7 @@
     ../../modules/server_common
     ../../modules/common.nix
     ./wireguard.nix
+    ./oauth2-proxy.nix
   ];
 
   networking.hostName = "ambriel";

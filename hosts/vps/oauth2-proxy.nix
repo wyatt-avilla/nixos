@@ -8,6 +8,7 @@ let
   inherit (config.variables) domain;
   clientSecretFile = "/etc/oauth2-proxy/client-secret";
   cookieSecretFile = "/etc/oauth2-proxy/cookie-secret";
+  user = config.systemd.services.oauth2-proxy.serviceConfig.User;
 in
 {
   options.variables = {
@@ -54,13 +55,15 @@ in
         name = "oauth2-proxy-copy-client-secret";
         source = "${config.variables.secretsDirectory}/oauth2-proxy-client-secret";
         dest = clientSecretFile;
-        mode = "600";
+        inherit user;
+        mode = "400";
       })
       // (config.secrets.mkCopyService {
         name = "oauth2-proxy-copy-cookie-secret";
         source = "${config.variables.secretsDirectory}/oauth2-proxy-cookie-secret";
         dest = cookieSecretFile;
-        mode = "600";
+        inherit user;
+        mode = "400";
       });
   };
 }

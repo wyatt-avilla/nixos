@@ -7,7 +7,7 @@ in
   services.microbin = {
     enable = true;
     settings = {
-      MICROBIN_BIND = "0.0.0.0";
+      MICROBIN_BIND = config.variables.homelab.wireguard.ip;
       MICROBIN_PORT = port;
       MICROBIN_DATA_DIR = dir;
       MICROBIN_HIDE_LOGO = true;

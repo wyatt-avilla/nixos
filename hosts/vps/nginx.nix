@@ -50,51 +50,82 @@ in
         enableACME = true;
         forceSSL = true;
 
-        locations = {
-          "@error401" = {
-            return = "302 /oauth2/start?rd=$scheme://$host$request_uri";
-          };
+        locations =
+          let
+            filebrowserProxy = "http://${config.variables.homelab.wireguard.ip}:${toString config.variables.filebrowser.port}";
 
-          "/" = {
-            proxyPass = "http://${config.variables.homelab.wireguard.ip}:${toString config.variables.filebrowser.port}";
-            extraConfig = ''
-              auth_request /oauth2/auth;
-              error_page 401 = @error401;
-
-              auth_request_set $user $upstream_http_x_auth_request_user;
-              auth_request_set $email $upstream_http_x_auth_request_email;
-              proxy_set_header X-User $user;
-              proxy_set_header X-Email $email;
-
-              proxy_set_header Host $host;
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto $scheme;
-
-              client_max_body_size 50G;
-            '';
-          };
-
-          "= /oauth2/auth" = {
-            inherit proxyPass;
-            extraConfig = ''
-              internal;
-              proxy_pass_request_body off;
-              proxy_set_header Content-Length "";
-              proxy_set_header X-Original-URI $request_uri;
-            '';
-          };
-
-          "/oauth2/" = {
-            inherit proxyPass;
-            extraConfig = ''
+            publicExtraConfig = ''
               proxy_set_header Host $host;
               proxy_set_header X-Real-IP $remote_addr;
               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
               proxy_set_header X-Forwarded-Proto $scheme;
             '';
+          in
+          {
+            "@error401" = {
+              return = "302 /oauth2/start?rd=$scheme://$host$request_uri";
+            };
+
+            "/share" = {
+              proxyPass = filebrowserProxy;
+              extraConfig = publicExtraConfig;
+            };
+
+            "/static" = {
+              proxyPass = filebrowserProxy;
+              extraConfig = publicExtraConfig;
+            };
+
+            "/api/public/share" = {
+              proxyPass = filebrowserProxy;
+              extraConfig = publicExtraConfig;
+            };
+
+            "/api/public/dl" = {
+              proxyPass = filebrowserProxy;
+              extraConfig = publicExtraConfig;
+            };
+
+            "/" = {
+              proxyPass = filebrowserProxy;
+              extraConfig = ''
+                auth_request /oauth2/auth;
+                error_page 401 = @error401;
+
+                auth_request_set $user $upstream_http_x_auth_request_user;
+                auth_request_set $email $upstream_http_x_auth_request_email;
+                proxy_set_header X-User $user;
+                proxy_set_header X-Email $email;
+
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+
+                client_max_body_size 50G;
+              '';
+            };
+
+            "= /oauth2/auth" = {
+              inherit proxyPass;
+              extraConfig = ''
+                internal;
+                proxy_pass_request_body off;
+                proxy_set_header Content-Length "";
+                proxy_set_header X-Original-URI $request_uri;
+              '';
+            };
+
+            "/oauth2/" = {
+              inherit proxyPass;
+              extraConfig = ''
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+              '';
+            };
           };
-        };
       };
 
       "bin.${domain}" = {

@@ -5,7 +5,9 @@
     openFirewall = true;
     accelerationDevices = null;
     mediaLocation = "${config.storageDir}/immich";
-    port = 2283;
+    host = config.variables.homelab.wireguard.ip;
+    inherit (config.variables.immich) port;
+    settings.server.externalDomain = "https://immich.${config.variables.domain}";
   };
 
   users.users.immich.extraGroups = [

@@ -21,9 +21,6 @@ in
             "www.${config.variables.domain}" = {
               service = "http://localhost:${toString config.services.wyattwtf.port}";
             };
-            "immich.${config.variables.domain}" = {
-              service = "http://localhost:${toString config.services.immich.port}";
-            };
             "syncthing.${config.variables.domain}" = {
               service = "http://${toString config.services.syncthing.guiAddress}";
             };

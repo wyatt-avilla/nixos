@@ -8,7 +8,7 @@ in
     openFirewall = true;
     settings = {
       address = config.variables.homelab.wireguard.ip;
-      port = 8789;
+      inherit (config.variables.filebrowser) port;
       root = rootDir;
     };
   };

@@ -56,7 +56,7 @@ in
           };
 
           "/" = {
-            proxyPass = "http://${config.variables.homelab.wireguard.ip}:8789";
+            proxyPass = "http://${config.variables.homelab.wireguard.ip}:${toString config.variables.filebrowser.port}";
             extraConfig = ''
               auth_request /oauth2/auth;
               error_page 401 = @error401;

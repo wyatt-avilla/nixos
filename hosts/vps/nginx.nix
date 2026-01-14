@@ -4,12 +4,26 @@ let
   proxyPass = "http://${config.variables.authAddress}";
 in
 {
+  networking.firewall.allowedTCPPorts = [
+    80
+    443
+  ];
+
   services.nginx = {
     enable = true;
-    recommendedProxySettings = true;
+    recommendedProxySettings = false;
     recommendedTlsSettings = true;
     recommendedOptimisation = true;
     recommendedGzipSettings = true;
+
+    appendHttpConfig = ''
+      proxy_buffer_size 128k;
+      proxy_buffers 4 256k;
+      proxy_busy_buffers_size 256k;
+      large_client_header_buffers 4 16k;
+      proxy_headers_hash_max_size 1024;
+      proxy_headers_hash_bucket_size 128;
+    '';
 
     virtualHosts = {
       "auth.${domain}" = {
@@ -21,44 +35,71 @@ in
           extraConfig = ''
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Scheme $scheme;
-            proxy_set_header X-Auth-Request-Redirect $request_uri;
+            proxy_set_header X-Auth-Request-Redirect $scheme://$host$request_uri;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Upgrade $http_upgrade;
           '';
         };
       };
 
-      "filebrowser.${domain}" = {
+      "files.${domain}" = {
         enableACME = true;
         forceSSL = true;
 
-        locations."/" = {
-          proxyPass = "http://${config.variables.homelab.wireguard.ip}:8789";
-          extraConfig = ''
-            auth_request /oauth2/auth;
-            error_page 401 = /oauth2/sign_in;
+        locations = {
+          "@error401" = {
+            return = "302 /oauth2/start?rd=$scheme://$host$request_uri";
+          };
 
-            auth_request_set $user $upstream_http_x_auth_request_user;
-            auth_request_set $email $upstream_http_x_auth_request_email;
-            proxy_set_header X-User $user;
-            proxy_set_header X-Email $email;
+          "/" = {
+            proxyPass = "http://${config.variables.homelab.wireguard.ip}:8789";
+            extraConfig = ''
+              auth_request /oauth2/auth;
+              error_page 401 = @error401;
 
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+              auth_request_set $user $upstream_http_x_auth_request_user;
+              auth_request_set $email $upstream_http_x_auth_request_email;
+              proxy_set_header X-User $user;
+              proxy_set_header X-Email $email;
 
-            client_max_body_size 50G;
-          '';
-        };
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
 
-        locations."/oauth2/" = {
-          inherit proxyPass;
-          extraConfig = ''
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Scheme $scheme;
-            proxy_set_header X-Auth-Request-Redirect $request_uri;
-          '';
+              client_max_body_size 50G;
+            '';
+          };
+
+          "= /oauth2/auth" = {
+            inherit proxyPass;
+            extraConfig = ''
+              internal;
+              proxy_pass_request_body off;
+              proxy_set_header Content-Length "";
+              proxy_set_header X-Original-URI $request_uri;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header X-Forwarded-Host $host;
+            '';
+          };
+
+          "/oauth2/" = {
+            inherit proxyPass;
+            extraConfig = ''
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header X-Forwarded-Host $host;
+              proxy_set_header X-Scheme $scheme;
+            '';
+          };
         };
       };
     };

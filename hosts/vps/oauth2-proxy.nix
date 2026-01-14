@@ -32,6 +32,9 @@ in
 
       httpAddress = config.variables.authAddress;
 
+      reverseProxy = true;
+      setXauthrequest = true;
+
       clientSecret = null;
       cookie.secret = null;
 
@@ -40,6 +43,8 @@ in
         cookie-secret-file = cookieSecretFile;
 
         redirect-url = "https://auth.${domain}/oauth2/callback";
+
+        whitelist-domain = ".${domain}";
 
         cookie-domain = ".${domain}";
         cookie-secure = "true";

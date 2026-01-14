@@ -30,7 +30,7 @@ let
       copyScript = pkgs.writeShellScriptBin "copy-secret-${name}" ''
         set -euo pipefail
         echo "[${name}] Copying ${source} to ${dest}"
-        install -Dm${mode} "${source}" "${dest}"
+        ${lib.getExe pkgs.perl} -pe 'chomp if eof' "${source}" > "${dest}"
         chown "${user}":"${group}" "${dest}"
         echo "[${name}] Credentials installed with ${user}:${group} ownership and ${mode} perms"
       '';

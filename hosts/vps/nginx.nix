@@ -117,32 +117,32 @@ in
               return = "302 /oauth2/start?rd=$scheme://$host$request_uri";
             };
 
-            "/upload/" = {
+            "/upload" = {
               proxyPass = microbinProxy;
               extraConfig = publicExtraConfig;
             };
 
-            "/p/" = {
+            "/p" = {
               proxyPass = microbinProxy;
               extraConfig = publicExtraConfig;
             };
 
-            "/raw/" = {
+            "/raw" = {
               proxyPass = microbinProxy;
               extraConfig = publicExtraConfig;
             };
 
-            "/qr/" = {
+            "/qr" = {
               proxyPass = microbinProxy;
               extraConfig = publicExtraConfig;
             };
 
-            "/file/" = {
+            "/file" = {
               proxyPass = microbinProxy;
               extraConfig = publicExtraConfig;
             };
 
-            "/static/" = {
+            "/static" = {
               proxyPass = microbinProxy;
               extraConfig = publicExtraConfig;
             };

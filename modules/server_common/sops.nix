@@ -30,8 +30,16 @@ let
       copyScript = pkgs.writeShellScriptBin "copy-secret-${name}" ''
         set -euo pipefail
         echo "[${name}] Copying ${source} to ${dest}"
+
+        dest_dir=$(dirname "${dest}")
+        if [ ! -d "$dest_dir" ]; then
+          echo "[${name}] Creating directory $dest_dir"
+          mkdir -p "$dest_dir"
+        fi
+
         ${lib.getExe pkgs.perl} -pe 'chomp if eof' "${source}" > "${dest}"
         chown "${user}":"${group}" "${dest}"
+
         echo "[${name}] Credentials installed with ${user}:${group} ownership and ${mode} perms"
       '';
     in

@@ -20,7 +20,14 @@ in
         issuerURL = "https://accounts.google.com";
         clientId = inputs.nix-secrets.nixosModules.plainSecrets.vps.oauth2-client-id;
         clientSecret._secret = clientSecretFile;
+        scope = "openid profile email";
+        signingAlgorithm = "RS256";
+        storageLabelClaim = "preferred_username";
+        storageQuotaClaim = "immich_quota";
+        defaultStorageQuota = 0;
         buttonText = "Sign in with Google";
+        autoRegister = true;
+        autoLaunch = true;
         mobileOverrideEnabled = true;
         mobileRedirectUri = "https://immich.${config.variables.domain}/api/oauth/mobile-redirect";
       };

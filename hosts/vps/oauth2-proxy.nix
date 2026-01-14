@@ -24,7 +24,7 @@ in
 
       provider = "google";
 
-      clientID = inputs.nix-secrets.nixosModules.plainSecrets.vps.oauth2-proxy-client-id;
+      clientID = inputs.nix-secrets.nixosModules.plainSecrets.vps.oauth2-client-id;
 
       email.addresses = lib.strings.concatLines [
         inputs.nix-secrets.nixosModules.plainSecrets.personalEmail
@@ -56,14 +56,14 @@ in
     systemd.services =
       (config.secrets.mkCopyService {
         name = "oauth2-proxy-copy-client-secret";
-        source = "${config.variables.secretsDirectory}/oauth2-proxy-client-secret";
+        source = "${config.variables.secretsDirectory}/oauth2-client-secret";
         dest = clientSecretFile;
         inherit user;
         mode = "400";
       })
       // (config.secrets.mkCopyService {
         name = "oauth2-proxy-copy-cookie-secret";
-        source = "${config.variables.secretsDirectory}/oauth2-proxy-cookie-secret";
+        source = "${config.variables.secretsDirectory}/oauth2-cookie-secret";
         dest = cookieSecretFile;
         inherit user;
         mode = "400";

@@ -18,7 +18,7 @@ in
 
       oauth = {
         issuerURL = "https://accounts.google.com";
-        clientId = inputs.nix-secrets.nixosModules.plainSecrets.vps.oauth2-proxy-client-id;
+        clientId = inputs.nix-secrets.nixosModules.plainSecrets.vps.oauth2-client-id;
         clientSecret._secret = clientSecretFile;
         buttonText = "Sign in with Google";
         mobileOverrideEnabled = true;
@@ -34,7 +34,7 @@ in
 
   systemd.services = config.secrets.mkCopyService {
     name = "immich-oauth2-copy-client-secret";
-    source = "${config.variables.secretsDirectory}/oauth2-proxy-client-secret";
+    source = "${config.variables.secretsDirectory}/oauth2-client-secret";
     dest = clientSecretFile;
     inherit user;
     mode = "400";

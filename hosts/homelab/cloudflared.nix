@@ -24,9 +24,6 @@ in
             "immich.${config.variables.domain}" = {
               service = "http://localhost:${toString config.services.immich.port}";
             };
-            "bin.${config.variables.domain}" = {
-              service = "http://localhost:${toString config.services.microbin.settings.MICROBIN_PORT}";
-            };
             "syncthing.${config.variables.domain}" = {
               service = "http://${toString config.services.syncthing.guiAddress}";
             };

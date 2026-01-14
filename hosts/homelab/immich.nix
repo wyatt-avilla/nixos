@@ -16,6 +16,8 @@ in
     settings = {
       server.externalDomain = "https://immich.${config.variables.domain}";
 
+      passwordLogin.enabled = false;
+
       oauth = {
         enabled = true;
         issuerUrl = "https://accounts.google.com";

@@ -18,7 +18,7 @@ in
 
       oauth = {
         enabled = true;
-        issuerURL = "https://accounts.google.com";
+        issuerUrl = "https://accounts.google.com";
         clientId = inputs.nix-secrets.nixosModules.plainSecrets.vps.oauth2-client-id;
         clientSecret._secret = clientSecretFile;
         scope = "openid profile email";

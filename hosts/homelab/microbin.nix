@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  port = 2233;
+  inherit (config.variables.microbin) port;
   dir = "${config.storageDir}/microbin";
 in
 {
@@ -17,8 +17,8 @@ in
       MICROBIN_PRIVATE = true;
       MICROBIN_QR = true;
       MICROBIN_ETERNAL_PASTA = true;
-      MICROBIN_MAX_FILE_SIZE_ENCRYPTED_MB = 100;
-      MICROBIN_MAX_FILE_SIZE_UNENCRYPTED_MB = 100;
+      MICROBIN_MAX_FILE_SIZE_ENCRYPTED_MB = 1000 * 20;
+      MICROBIN_MAX_FILE_SIZE_UNENCRYPTED_MB = 1000 * 20;
       MICROBIN_PUBLIC_PATH = "https://bin.${config.variables.domain}";
     };
   };

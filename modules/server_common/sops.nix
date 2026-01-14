@@ -39,6 +39,7 @@ let
 
         ${lib.getExe pkgs.perl} -pe 'chomp if eof' "${source}" > "${dest}"
         chown "${user}":"${group}" "${dest}"
+        chmod "${mode}" "${dest}"
 
         echo "[${name}] Credentials installed with ${user}:${group} ownership and ${mode} perms"
       '';

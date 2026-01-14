@@ -32,7 +32,6 @@ in
 
       httpAddress = config.variables.authAddress;
 
-      reverseProxy = true;
       setXauthrequest = true;
 
       clientSecret = null;
@@ -48,7 +47,6 @@ in
 
         cookie-domain = ".${domain}";
         cookie-secure = "true";
-        cookie-httponly = "true";
 
         cookie-expire = "${toString (7 * 24)}h";
         cookie-refresh = "1h";

@@ -14,7 +14,7 @@ in
     inherit (config.variables.immich) port;
 
     settings = {
-      server.externalDomain = "https://immich.${config.variables.domain}";
+      server.externalDomain = "https://photos.${config.variables.domain}";
 
       passwordLogin.enabled = false;
 
@@ -32,7 +32,7 @@ in
         autoRegister = true;
         autoLaunch = true;
         mobileOverrideEnabled = true;
-        mobileRedirectUri = "https://immich.${config.variables.domain}/api/oauth/mobile-redirect";
+        mobileRedirectUri = "https://photos.${config.variables.domain}/api/oauth/mobile-redirect";
       };
     };
   };

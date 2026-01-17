@@ -74,8 +74,19 @@ in
     };
   };
 
-  systemd.services.syncthing = {
-    environment.STNODEFAULTFOLDER = "true";
+  systemd = {
+    services.syncthing = {
+      environment.STNODEFAULTFOLDER = "true";
+    };
+
+    tmpfiles.rules = [
+      "d ${syncthingDir}/misc 0775 - - -"
+      "d ${syncthingDir}/pictures 0775 - - -"
+      "d ${syncthingDir}/music 0775 - - -"
+      "d ${syncthingDir}/documents 0775 - - -"
+      "d ${syncthingDir}/books 0775 - - -"
+      "d ${syncthingDir}/notes 0775 - - -"
+    ];
   };
 
   systemd.services.syncthing-perms-fixer =

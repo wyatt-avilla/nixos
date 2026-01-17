@@ -1,6 +1,6 @@
 { config, inputs, ... }:
 let
-  syncthingDir = "${config.storageDir}/syncthing";
+  syncthingDir = "${config.storageDir}/filebrowser/syncthing";
 in
 {
   services.syncthing = {

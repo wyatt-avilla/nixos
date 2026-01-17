@@ -97,8 +97,10 @@ in
           fullpath="$path$file"
           if [ -f "$fullpath" ]; then
             ${pkgs.lib.getExe' pkgs.coreutils "chmod"} 664 "$fullpath"
+            ${pkgs.lib.getExe' pkgs.coreutils "chown"} ${config.services.syncthing.user}:${config.services.syncthing.group} "$fullpath"
           elif [ -d "$fullpath" ]; then
             ${pkgs.lib.getExe' pkgs.coreutils "chmod"} 775 "$fullpath"
+            ${pkgs.lib.getExe' pkgs.coreutils "chown"} ${config.services.syncthing.user}:${config.services.syncthing.group} "$fullpath"
           fi
         done
       '';

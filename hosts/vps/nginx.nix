@@ -218,7 +218,7 @@ in
           };
       };
 
-      "immich.${domain}" = {
+      "photos.${domain}" = {
         enableACME = true;
         forceSSL = true;
 

@@ -69,7 +69,8 @@ in
     };
   };
 
-  systemd = {
-    services.syncthing.environment.STNODEFAULTFOLDER = "true";
+  systemd.services.syncthing = {
+    environment.STNODEFAULTFOLDER = "true";
+    serviceConfig.UMask = "0002";
   };
 }

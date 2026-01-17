@@ -32,6 +32,8 @@
         "d ${config.storageDir}/immich 0770 immich storage -"
         "d ${config.storageDir}/filebrowser 0770 filebrowser storage -"
         "d ${config.storageDir}/microbin 0770 microbin storage -"
+
+        "L+ ${config.storageDir}/filebrowser/syncthing - - - - ${config.storageDir}/syncthing"
       ];
 
       services."fix-storage-dir-perms" = {

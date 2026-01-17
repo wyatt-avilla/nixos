@@ -1,4 +1,9 @@
-{ config, inputs, ... }:
+{
+  pkgs,
+  config,
+  inputs,
+  ...
+}:
 let
   syncthingDir = "${config.storageDir}/syncthing";
 in
@@ -69,8 +74,45 @@ in
     };
   };
 
-  systemd.services.syncthing = {
-    environment.STNODEFAULTFOLDER = "true";
-    serviceConfig.UMask = "0002";
+  systemd = {
+    services.syncthing = {
+      environment.STNODEFAULTFOLDER = "true";
+    };
+
+    tmpfiles.rules = [
+      "d ${syncthingDir}/misc 0775 - - -"
+      "d ${syncthingDir}/pictures 0775 - - -"
+      "d ${syncthingDir}/music 0775 - - -"
+      "d ${syncthingDir}/documents 0775 - - -"
+      "d ${syncthingDir}/books 0775 - - -"
+      "d ${syncthingDir}/notes 0775 - - -"
+    ];
   };
+
+  systemd.services.syncthing-perms-fixer =
+    let
+      syncthing-perms-fixer = pkgs.writeShellScriptBin "syncthing-perms-fixer" ''
+        ${pkgs.lib.getExe' pkgs.inotify-tools "inotifywait"} -m -r -e create,moved_to ${syncthingDir} | \
+        while read -r path action file; do
+          fullpath="$path$file"
+          if [ -f "$fullpath" ]; then
+            ${pkgs.lib.getExe' pkgs.coreutils "chmod"} 664 "$fullpath"
+          elif [ -d "$fullpath" ]; then
+            ${pkgs.lib.getExe' pkgs.coreutils "chmod"} 775 "$fullpath"
+          fi
+        done
+      '';
+    in
+    {
+      description = "Fix permissions in Syncthing directory";
+      after = [ "network.target" ];
+      wantedBy = [ "multi-user.target" ];
+
+      serviceConfig = {
+        Type = "simple";
+        ExecStart = "${pkgs.lib.getExe syncthing-perms-fixer}";
+        Restart = "always";
+        RestartSec = "5s";
+      };
+    };
 }

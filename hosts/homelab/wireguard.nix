@@ -18,7 +18,7 @@ in
           {
             inherit (inputs.nix-secrets.nixosModules.plainSecrets.vps.wireguard) publicKey;
 
-            endpoint = "${config.variables.vps.publicIp}:${toString config.variables.vps.wireguard.port}";
+            endpoint = "${inputs.nix-secrets.nixosModules.plainSecrets.vps.publicIp}:${toString config.variables.vps.wireguard.port}";
 
             allowedIPs = [ "10.0.0.0/24" ];
 

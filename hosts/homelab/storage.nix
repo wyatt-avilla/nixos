@@ -31,7 +31,6 @@
         "d ${config.storageDir}/syncthing 0770 syncthing storage -"
         "d ${config.storageDir}/immich 0770 immich storage -"
         "d ${config.storageDir}/filebrowser 0770 filebrowser storage -"
-        "d ${config.storageDir}/filebrowser/syncthing 0770 syncthing storage -"
         "d ${config.storageDir}/microbin 0770 microbin storage -"
       ];
 
@@ -54,9 +53,6 @@
 
             chown filebrowser:storage "${config.storageDir}/filebrowser"
             chmod 0770 "${config.storageDir}/filebrowser"
-
-            chown syncthing:storage "${config.storageDir}/filebrowser/syncthing"
-            chmod 0770 "${config.storageDir}/filebrowser/syncthing"
 
             chown microbin:storage "${config.storageDir}/microbin"
             chmod 0770 "${config.storageDir}/microbin"

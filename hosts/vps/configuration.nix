@@ -2,7 +2,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/server_common
+    ../../modules/server-common
     ../../modules/common.nix
     ./wireguard.nix
     ./oauth2-proxy.nix

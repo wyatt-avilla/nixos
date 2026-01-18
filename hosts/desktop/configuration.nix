@@ -1,7 +1,7 @@
 {
   imports = [
     ../../modules/common.nix
-    ../../modules/gui_common
+    ../../modules/gui-common
     ./hardware-configuration.nix
   ];
 

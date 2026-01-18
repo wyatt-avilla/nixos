@@ -2,7 +2,7 @@
 {
   imports = [
     ../../modules/common.nix
-    ../../modules/server_common
+    ../../modules/server-common
     ./hardware-configuration.nix
     ./syncthing.nix
     ./storage.nix

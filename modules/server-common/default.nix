@@ -4,7 +4,7 @@
     ./ssh.nix
     ./sops.nix
     ./wireguard.nix
-    ./service_variables.nix
+    ./service-variables.nix
   ];
 
   config = {

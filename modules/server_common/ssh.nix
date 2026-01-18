@@ -4,24 +4,30 @@ let
   sshUserHome = config.users.users.${sshUser}.home;
 
   desktopKey = "${config.variables.secretsDirectory}/desktop-ssh-key";
+  laptopKey = "${config.variables.secretsDirectory}/laptop-ssh-key";
 
   authorizedKeysGenScript = pkgs.writeShellScriptBin "auth-key-file-gen" ''
     set -euo pipefail
 
-    keyFile="${desktopKey}"
     targetAuthorizedKeys="${sshUserHome}/.ssh/authorized_keys"
 
     mkdir -p "$(dirname "$targetAuthorizedKeys")"
     touch "$targetAuthorizedKeys"
 
-    key="$(cat "$keyFile")"
+    for keyFile in "${desktopKey}" "${laptopKey}"; do
+      if [ -f "$keyFile" ]; then
+        key="$(cat "$keyFile")"
 
-    if ! grep -qF "$key" "$targetAuthorizedKeys"; then
-      echo "$key" >> "$targetAuthorizedKeys"
-      echo "Added key to authorized_keys"
-    else
-      echo "Key already present in authorized_keys"
-    fi
+        if ! grep -qF "$key" "$targetAuthorizedKeys"; then
+          echo "$key" >> "$targetAuthorizedKeys"
+          echo "Added key from $keyFile to authorized_keys"
+        else
+          echo "Key from $keyFile already present in authorized_keys"
+        fi
+      else
+        echo "Warning: Key file $keyFile not found"
+      fi
+    done
 
     chmod 600 "$targetAuthorizedKeys"
     chown ${sshUser}:users "$targetAuthorizedKeys"

@@ -5,6 +5,7 @@ let
 
   desktopKey = "${config.variables.secretsDirectory}/desktop-ssh-key";
   laptopKey = "${config.variables.secretsDirectory}/laptop-ssh-key";
+  vpsKey = "${config.variables.secretsDirectory}/vps-ssh-key";
 
   authorizedKeysGenScript = pkgs.writeShellScriptBin "auth-key-file-gen" ''
     set -euo pipefail
@@ -14,7 +15,7 @@ let
     mkdir -p "$(dirname "$targetAuthorizedKeys")"
     touch "$targetAuthorizedKeys"
 
-    for keyFile in "${desktopKey}" "${laptopKey}"; do
+    for keyFile in "${desktopKey}" "${laptopKey}" "${vpsKey}"; do
       if [ -f "$keyFile" ]; then
         key="$(cat "$keyFile")"
 

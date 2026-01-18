@@ -7,6 +7,7 @@
     ./wireguard.nix
     ./oauth2-proxy.nix
     ./nginx.nix
+    ./ssh-proxy.nix
   ];
 
   networking.hostName = "ambriel";

@@ -36,6 +36,7 @@
         "d ${config.storageDir}/audiobookshelf 0770 audiobookshelf storage -"
 
         "L+ ${config.storageDir}/filebrowser/syncthing - - - - ${config.storageDir}/syncthing"
+        "L+ ${config.storageDir}/filebrowser/audiobookshelf - - - - ${config.storageDir}/syncthing"
       ];
 
       services."fix-storage-dir-perms" = {

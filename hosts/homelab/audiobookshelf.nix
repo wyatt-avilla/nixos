@@ -3,7 +3,7 @@
   services.audiobookshelf = {
     enable = true;
     host = config.variables.homelab.wireguard.ip;
-    port = 9981;
+    inherit (config.variables.audiobookshelf) port;
 
     openFirewall = true;
   };

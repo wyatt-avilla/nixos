@@ -2,10 +2,10 @@
 {
   services.audiobookshelf = {
     enable = true;
-    host = "0.0.0.0"; # TODO: change
+    host = config.variables.homelab.wireguard.ip;
     port = 9981;
 
-    openFirewall = true; # TODO: change
+    openFirewall = true;
   };
 
   systemd.services.audiobookshelf-setup = {

@@ -19,7 +19,7 @@
       syncthing.group = "storage";
       immich.group = "storage";
       filebrowser.group = "storage";
-      audiobookself.group = "storage";
+      audiobookshelf.group = "storage";
     };
 
     users.users = {

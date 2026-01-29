@@ -2,6 +2,7 @@
 {
   services.audiobookshelf = {
     enable = true;
+    host = "0.0.0.0"; # TODO: change
     port = 9981;
 
     openFirewall = true; # TODO: change

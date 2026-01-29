@@ -19,6 +19,7 @@
       syncthing.group = "storage";
       immich.group = "storage";
       filebrowser.group = "storage";
+      audiobookself.group = "storage";
     };
 
     users.users = {
@@ -32,6 +33,7 @@
         "d ${config.storageDir}/immich 0770 immich storage -"
         "d ${config.storageDir}/filebrowser 0770 filebrowser storage -"
         "d ${config.storageDir}/microbin 0770 microbin storage -"
+        "d ${config.storageDir}/audiobookshelf 0770 audiobookshelf storage -"
 
         "L+ ${config.storageDir}/filebrowser/syncthing - - - - ${config.storageDir}/syncthing"
       ];
@@ -58,6 +60,9 @@
 
             chown microbin:storage "${config.storageDir}/microbin"
             chmod 0770 "${config.storageDir}/microbin"
+
+            chown audiobookshelf:storage "${config.storageDir}/audiobookshelf"
+            chmod 0770 "${config.storageDir}/audiobookshelf"
           '';
         };
       };

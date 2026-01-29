@@ -235,6 +235,20 @@ in
           '';
         };
       };
+
+      "audiobooks.${domain}" = {
+        enableACME = true;
+        forceSSL = true;
+
+        locations."/" = {
+          recommendedProxySettings = true;
+          proxyPass = "http://${config.variables.homelab.wireguard.ip}:${toString config.variables.audiobookshelf.port}";
+          proxyWebsockets = true;
+          extraConfig = ''
+            proxy_redirect http:// $scheme://;
+          '';
+        };
+      };
     };
   };
 

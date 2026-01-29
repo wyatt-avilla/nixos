@@ -15,5 +15,10 @@
       type = lib.types.port;
       default = 2283;
     };
+
+    audiobookshelf.port = lib.mkOption {
+      type = lib.types.port;
+      default = 9981;
+    };
   };
 }

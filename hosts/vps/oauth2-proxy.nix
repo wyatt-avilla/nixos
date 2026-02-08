@@ -27,7 +27,7 @@ in
       clientID = inputs.nix-secrets.nixosModules.plainSecrets.vps.oauth2-client-id;
 
       email.addresses = lib.strings.concatLines [
-        inputs.nix-secrets.nixosModules.plainSecrets.personalEmail
+        inputs.nix-secrets.nixosModules.plainSecrets.email.personal
       ];
 
       httpAddress = config.variables.authAddress;

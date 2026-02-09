@@ -254,6 +254,6 @@ in
 
   security.acme = {
     acceptTerms = true;
-    defaults.email = inputs.nix-secrets.nixosModules.plainSecrets.personalEmail;
+    defaults.email = inputs.nix-secrets.nixosModules.plainSecrets.email.personal;
   };
 }

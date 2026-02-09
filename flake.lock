@@ -124,11 +124,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1753764242,
-        "narHash": "sha256-dhoA9pnMppaCJO5tzNQaTDV9mQEaL9ijgSRRxDibYKY=",
+        "lastModified": 1770625239,
+        "narHash": "sha256-vS7FIo8FUtHtHiAmiUngPOQ9NFITskoVasG+33vCDKA=",
         "owner": "wyatt-avilla",
         "repo": "nix-ci",
-        "rev": "9ef2f997abc1fa03c4e18de0dd3a35858dd9f5e8",
+        "rev": "57b99f9f7834cf69bc52e993a7c0b73bc3b172b9",
         "type": "github"
       },
       "original": {
@@ -147,11 +147,11 @@
         "sops-nix": "sops-nix"
       },
       "locked": {
-        "lastModified": 1770516335,
-        "narHash": "sha256-nFGQvb/slyil6sEPKWyImpu6IhKxgkPf/Fz/DvZZSXs=",
+        "lastModified": 1770625592,
+        "narHash": "sha256-uvjmOiIYztpzLBXFUHjf/b1Rrl+haE9fpSV9/AiUC60=",
         "ref": "refs/heads/main",
-        "rev": "40d9b0359321108713c6cad7818d62df29af05e6",
-        "revCount": 54,
+        "rev": "1bb1f358a469b968c7fcf16a8479cccc94458167",
+        "revCount": 55,
         "type": "git",
         "url": "ssh://git@github.com/wyatt-avilla/nix-secrets"
       },

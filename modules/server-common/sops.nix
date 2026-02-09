@@ -9,7 +9,7 @@ let
   keyFile = "/var/lib/sops-nix/key.txt";
   sopsPrivateKey = "${config.variables.secretsDirectory}/sops-private-key";
 
-  sopsKeyFileGenScript = pkgs.writeShellScriptBin "sops-key-file-gen" ''
+  sopsKeyFileGenScript = pkgs.writeShellScript "sops-key-file-gen" ''
     if [ -s "${sopsPrivateKey}" ]; then
       cp -f "${sopsPrivateKey}" "${keyFile}"
     fi
@@ -27,7 +27,7 @@ let
       before ? [ ],
     }:
     let
-      copyScript = pkgs.writeShellScriptBin "copy-secret-${name}" ''
+      copyScript = pkgs.writeShellScript "copy-secret-${name}" ''
         set -euo pipefail
         echo "[${name}] Copying ${source} to ${dest}"
 
@@ -49,7 +49,7 @@ let
         description = "Copies decrypted ${name} secret to ${dest}";
         inherit wantedBy before;
         serviceConfig = {
-          ExecStart = lib.getExe copyScript;
+          ExecStart = copyScript;
           Type = "oneshot";
         };
       };
@@ -76,7 +76,7 @@ in
       wantedBy = [ "default.target" ];
 
       serviceConfig = {
-        ExecStart = "${sopsKeyFileGenScript}/bin/sops-key-file-gen";
+        ExecStart = sopsKeyFileGenScript;
         Type = "oneshot";
       };
     };

@@ -91,7 +91,7 @@ in
 
   systemd.services.syncthing-perms-fixer =
     let
-      syncthing-perms-fixer = pkgs.writeShellScriptBin "syncthing-perms-fixer" ''
+      syncthing-perms-fixer = pkgs.writeShellScript "syncthing-perms-fixer" ''
         ${pkgs.lib.getExe' pkgs.inotify-tools "inotifywait"} -m -r -e create,moved_to ${syncthingDir} | \
         while read -r path action file; do
           fullpath="$path$file"
@@ -112,7 +112,7 @@ in
 
       serviceConfig = {
         Type = "simple";
-        ExecStart = "${pkgs.lib.getExe syncthing-perms-fixer}";
+        ExecStart = syncthing-perms-fixer;
         Restart = "always";
         RestartSec = "5s";
       };

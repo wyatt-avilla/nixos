@@ -7,7 +7,7 @@ let
   laptopKey = "${config.variables.secretsDirectory}/laptop-ssh-key";
   vpsKey = "${config.variables.secretsDirectory}/vps-ssh-key";
 
-  authorizedKeysGenScript = pkgs.writeShellScriptBin "auth-key-file-gen" ''
+  authorizedKeysGenScript = pkgs.writeShellScript "auth-key-file-gen" ''
     set -euo pipefail
 
     targetAuthorizedKeys="${sshUserHome}/.ssh/authorized_keys"
@@ -48,7 +48,7 @@ in
     wantedBy = [ "default.target" ];
 
     serviceConfig = {
-      ExecStart = "${authorizedKeysGenScript}/bin/auth-key-file-gen";
+      ExecStart = authorizedKeysGenScript;
       Type = "oneshot";
     };
   };

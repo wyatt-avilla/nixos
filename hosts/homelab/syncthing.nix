@@ -123,4 +123,36 @@ in
         RestartSec = "5s";
       };
     };
+
+  systemd.services.syncthing-mirror-boox = {
+    description = "Mirror boox_handwritten to notes/boox_handwritten";
+    after = [ "syncthing.service" ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig = {
+      Type = "simple";
+      User = config.services.syncthing.user;
+      Group = config.services.syncthing.group;
+      ExecStart = pkgs.writeShellScript "mirror-boox" ''
+        sync_dirs() {
+          ${pkgs.lib.getExe' pkgs.rsync "rsync"} -a --delete \
+            ${syncthingDir}/boox_handwritten/ \
+            ${syncthingDir}/notes/boox_handwritten/
+        }
+
+        # Initial sync
+        sync_dirs
+
+        # Watch for changes
+        ${pkgs.lib.getExe' pkgs.inotify-tools "inotifywait"} -m -r \
+          -e modify,create,delete,moved_to,moved_from,attrib \
+          ${syncthingDir}/boox_handwritten | \
+        while read -r path action file; do
+          sync_dirs
+        done
+      '';
+      Restart = "always";
+      RestartSec = "5s";
+    };
+  };
 }

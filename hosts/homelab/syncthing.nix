@@ -136,6 +136,8 @@ in
       ExecStart = pkgs.writeShellScript "mirror-boox" ''
         sync_dirs() {
           ${pkgs.lib.getExe' pkgs.rsync "rsync"} -a --delete \
+            --exclude='.stfolder' \
+            --exclude='.stignore' \
             ${syncthingDir}/boox_handwritten/ \
             ${syncthingDir}/notes/boox_handwritten/
         }

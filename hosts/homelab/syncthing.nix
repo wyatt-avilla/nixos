@@ -70,6 +70,11 @@ in
             "phone"
           ];
         };
+
+        boox_handwritten = {
+          path = "${syncthingDir}/boox_handwritten";
+          devices = [ "boox" ];
+        };
       };
     };
   };
@@ -86,6 +91,7 @@ in
       "d ${syncthingDir}/documents 0775 - - -"
       "d ${syncthingDir}/books 0775 - - -"
       "d ${syncthingDir}/notes 0775 - - -"
+      "d ${syncthingDir}/boox_handwritten 0775 - - -"
     ];
   };
 

@@ -103,11 +103,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1753764242,
-        "narHash": "sha256-dhoA9pnMppaCJO5tzNQaTDV9mQEaL9ijgSRRxDibYKY=",
+        "lastModified": 1770625239,
+        "narHash": "sha256-vS7FIo8FUtHtHiAmiUngPOQ9NFITskoVasG+33vCDKA=",
         "ref": "refs/heads/main",
-        "rev": "9ef2f997abc1fa03c4e18de0dd3a35858dd9f5e8",
-        "revCount": 30,
+        "rev": "57b99f9f7834cf69bc52e993a7c0b73bc3b172b9",
+        "revCount": 31,
         "type": "git",
         "url": "ssh://git@github.com/wyatt-avilla/nix-ci"
       },
@@ -210,11 +210,11 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1768564909,
-        "narHash": "sha256-Kell/SpJYVkHWMvnhqJz/8DqQg2b6PguxVWOuadbHCc=",
+        "lastModified": 1772433332,
+        "narHash": "sha256-izhTDFKsg6KeVBxJS9EblGeQ8y+O8eCa6RcW874vxEc=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "e4bae1bd10c9c57b2cf517953ab70060a828ee6f",
+        "rev": "cf59864ef8aa2e178cccedbe2c178185b0365705",
         "type": "github"
       },
       "original": {

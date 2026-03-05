@@ -34,9 +34,6 @@ in
 
       setXauthrequest = true;
 
-      clientSecret = null;
-      cookie.secret = null;
-
       extraConfig = {
         client-secret-file = clientSecretFile;
         cookie-secret-file = cookieSecretFile;

@@ -91,6 +91,7 @@
           pre-commit
           nixfmt-rfc-style
           statix
+          opentofu
         ];
         shellHook = ''
           pre-commit install

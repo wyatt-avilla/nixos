@@ -4,6 +4,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-secrets = {
       url = "git+ssh://git@github.com/wyatt-avilla/nix-secrets";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -28,6 +33,7 @@
       self,
       nixpkgs,
       nix-checks,
+      disko,
       ...
     }:
     let
@@ -81,6 +87,7 @@
 
           modules = [
             ./hosts/vps/configuration.nix
+            disko.nixosModules.disko
             inputs.nix-secrets.nixosModules.vps
           ];
         };

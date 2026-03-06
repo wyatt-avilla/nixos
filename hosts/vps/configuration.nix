@@ -2,6 +2,7 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ./disko.nix
     ../../modules/server-common
     ../../modules/common.nix
     ./wireguard.nix
@@ -13,12 +14,8 @@
   networking.hostName = "ambriel";
 
   boot.loader = {
-    systemd-boot.enable = lib.mkForce false;
+    systemd-boot.enable = true;
     efi.canTouchEfiVariables = lib.mkForce false;
-    grub = {
-      enable = true;
-      device = "/dev/vda";
-    };
   };
 
   networking.networkmanager.enable = true;

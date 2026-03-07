@@ -18,4 +18,6 @@ module "nixos_anywhere" {
 
   target_host = digitalocean_droplet.vps.ipv4_address
   instance_id = digitalocean_droplet.vps.id
+
+  extra_files_script = "${path.module}/upload-age-key.sh"
 }

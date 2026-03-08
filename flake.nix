@@ -86,6 +86,39 @@
         };
       };
 
+      packages.${system} =
+        let
+          ageKey = builtins.getEnv "SOPS_AGE_KEY";
+        in
+        {
+          vpsImage =
+            assert
+              ageKey != ""
+              || throw "SOPS_AGE_KEY must be set. Usage: SOPS_AGE_KEY=\$(cat /path/to/key) nix build .#vpsImage --impure";
+            (nixpkgs.lib.nixosSystem {
+              specialArgs = {
+                inherit system;
+                inherit (self) inputs;
+              };
+
+              modules = [
+                ./hosts/vps/configuration.nix
+                inputs.nix-secrets.nixosModules.vps
+                {
+                  sops.age = {
+                    keyFile = nixpkgs.lib.mkForce "/etc/sops/age-key";
+                    sshKeyPaths = [ ];
+                  };
+
+                  environment.etc."sops/age-key" = {
+                    text = ageKey;
+                    mode = "0400";
+                  };
+                }
+              ];
+            }).config.system.build.images.digital-ocean;
+        };
+
       devShells.${system}.default = pkgs.mkShell {
         packages = with pkgs; [
           pre-commit

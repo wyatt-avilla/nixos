@@ -1,6 +1,9 @@
 { lib, modulesPath, ... }:
 {
-  imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
+  imports = [
+    (modulesPath + "/profiles/qemu-guest.nix")
+    (modulesPath + "/virtualisation/digital-ocean-config.nix")
+  ];
 
   boot = {
     initrd.availableKernelModules = [

@@ -4,6 +4,7 @@
     ./hardware-configuration.nix
     ../../modules/server-common
     ../../modules/common.nix
+    ./do-networking.nix
     ./wireguard.nix
     ./oauth2-proxy.nix
     ./nginx.nix
@@ -15,12 +16,8 @@
   boot.loader = {
     systemd-boot.enable = lib.mkForce false;
     efi.canTouchEfiVariables = lib.mkForce false;
-    grub = {
-      enable = true;
-      device = "/dev/vda";
-    };
+    grub.enable = true;
   };
 
-  networking.networkmanager.enable = true;
   system.stateVersion = "26.05";
 }

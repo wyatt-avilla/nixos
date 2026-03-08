@@ -11,7 +11,7 @@ let
 
   sopsKeyFileGenScript = pkgs.writeShellScript "sops-key-file-gen" ''
     if [ -s "${sopsPrivateKey}" ]; then
-      cp -f "${sopsPrivateKey}" "${keyFile}"
+      install -Dm400 "${sopsPrivateKey}" "${keyFile}"
     fi
   '';
 

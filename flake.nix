@@ -89,12 +89,10 @@
       packages.${system} =
         let
           ageKey = builtins.getEnv "SOPS_AGE_KEY";
+          hashedPassword = builtins.getEnv "HASHED_PASSWORD";
         in
         {
           vpsImage =
-            assert
-              ageKey != ""
-              || throw "SOPS_AGE_KEY must be set. Usage: SOPS_AGE_KEY=\$(cat /path/to/key) nix build .#vpsImage --impure";
             (nixpkgs.lib.nixosSystem {
               specialArgs = {
                 inherit system;
@@ -111,12 +109,48 @@
                   };
 
                   environment.etc."sops/age-key" = {
-                    text = ageKey;
+                    text = nixpkgs.lib.throwIfNot (
+                      ageKey != ""
+                    ) "SOPS_AGE_KEY must be set. Use: nix run .#build-vps-image" ageKey;
                     mode = "0400";
                   };
+
+                  users.users.wyatt.hashedPassword = nixpkgs.lib.throwIfNot (
+                    hashedPassword != ""
+                  ) "HASHED_PASSWORD must be set. Use: nix run .#build-vps-image" hashedPassword;
                 }
               ];
             }).config.system.build.images.digital-ocean;
+        };
+
+      apps.${system}.build-vps-image =
+        let
+          script = pkgs.writeShellApplication {
+            name = "build-vps-image";
+            runtimeInputs = with pkgs; [
+              mkpasswd
+              nix
+            ];
+            text = ''
+              if [ -z "''${SOPS_AGE_KEY:-}" ]; then
+                echo "Enter SOPS age private key:"
+                read -r SOPS_AGE_KEY
+                export SOPS_AGE_KEY
+              fi
+
+              echo "Enter user password:"
+              HASHED_PASSWORD=$(mkpasswd --method=yescrypt)
+              export HASHED_PASSWORD
+
+              SOPS_AGE_KEY="$SOPS_AGE_KEY" \
+              HASHED_PASSWORD="$HASHED_PASSWORD" \
+              nix build .#vpsImage --impure "$@"
+            '';
+          };
+        in
+        {
+          type = "app";
+          program = "${script}/bin/build-vps-image";
         };
 
       devShells.${system}.default = pkgs.mkShell {

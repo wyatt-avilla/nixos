@@ -18,6 +18,7 @@
     systemd-boot.enable = lib.mkForce false;
     efi.canTouchEfiVariables = lib.mkForce false;
     grub.enable = true;
+    grub.devices = lib.mkForce [ "/dev/vda" ];
   };
 
   # root SSH access needed for nixos-anywhere nixos-rebuild step

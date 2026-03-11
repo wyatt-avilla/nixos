@@ -29,7 +29,7 @@ in
         storageQuotaClaim = "immich_quota";
         defaultStorageQuota = 0;
         buttonText = "Sign in with Google";
-        autoRegister = true;
+        autoRegister = false;
         autoLaunch = true;
         mobileOverrideEnabled = true;
         mobileRedirectUri = "https://photos.${config.variables.domain}/api/oauth/mobile-redirect";

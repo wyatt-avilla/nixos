@@ -2,6 +2,13 @@
 let
   inherit (config.variables) domain;
   proxyPass = "http://${config.variables.authAddress}";
+
+  streamConfig = ''
+    proxy_buffering off;
+    proxy_request_buffering off;
+    proxy_send_timeout 300s;
+    proxy_read_timeout 300s;
+  '';
 in
 {
   networking.firewall.allowedTCPPorts = [
@@ -11,7 +18,7 @@ in
 
   services.nginx = {
     enable = true;
-    recommendedProxySettings = false;
+    recommendedProxySettings = true;
     recommendedTlsSettings = true;
     recommendedOptimisation = true;
     recommendedGzipSettings = true;
@@ -33,11 +40,6 @@ in
         locations."/" = {
           inherit proxyPass;
           extraConfig = ''
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Forwarded-Host $host;
             proxy_set_header X-Scheme $scheme;
             proxy_set_header X-Auth-Request-Redirect $scheme://$host$request_uri;
             proxy_set_header Connection "upgrade";
@@ -54,12 +56,7 @@ in
           let
             filebrowserProxy = "http://${config.variables.homelab.wireguard.ip}:${toString config.variables.filebrowser.port}";
 
-            publicExtraConfig = ''
-              proxy_set_header Host $host;
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto $scheme;
-            '';
+            publicExtraConfig = streamConfig;
           in
           {
             "@error401" = {
@@ -97,13 +94,9 @@ in
                 proxy_set_header X-User $user;
                 proxy_set_header X-Email $email;
 
-                proxy_set_header Host $host;
-                proxy_set_header X-Real-IP $remote_addr;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header X-Forwarded-Proto $scheme;
-
                 client_max_body_size 50G;
-              '';
+              ''
+              + streamConfig;
             };
 
             "= /oauth2/auth" = {
@@ -116,15 +109,7 @@ in
               '';
             };
 
-            "/oauth2/" = {
-              inherit proxyPass;
-              extraConfig = ''
-                proxy_set_header Host $host;
-                proxy_set_header X-Real-IP $remote_addr;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header X-Forwarded-Proto $scheme;
-              '';
-            };
+            "/oauth2/" = { inherit proxyPass; };
           };
       };
 
@@ -135,13 +120,6 @@ in
         locations =
           let
             microbinProxy = "http://${config.variables.homelab.wireguard.ip}:${toString config.variables.microbin.port}";
-
-            publicExtraConfig = ''
-              proxy_set_header Host $host;
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto $scheme;
-            '';
           in
           {
             "@error401" = {
@@ -150,32 +128,26 @@ in
 
             "/upload" = {
               proxyPass = microbinProxy;
-              extraConfig = publicExtraConfig;
             };
 
             "/p" = {
               proxyPass = microbinProxy;
-              extraConfig = publicExtraConfig;
             };
 
             "/raw" = {
               proxyPass = microbinProxy;
-              extraConfig = publicExtraConfig;
             };
 
             "/qr" = {
               proxyPass = microbinProxy;
-              extraConfig = publicExtraConfig;
             };
 
             "/file" = {
               proxyPass = microbinProxy;
-              extraConfig = publicExtraConfig;
             };
 
             "/static" = {
               proxyPass = microbinProxy;
-              extraConfig = publicExtraConfig;
             };
 
             "/" = {
@@ -188,11 +160,6 @@ in
                 auth_request_set $email $upstream_http_x_auth_request_email;
                 proxy_set_header X-User $user;
                 proxy_set_header X-Email $email;
-
-                proxy_set_header Host $host;
-                proxy_set_header X-Real-IP $remote_addr;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header X-Forwarded-Proto $scheme;
               '';
             };
 
@@ -206,15 +173,7 @@ in
               '';
             };
 
-            "/oauth2/" = {
-              inherit proxyPass;
-              extraConfig = ''
-                proxy_set_header Host $host;
-                proxy_set_header X-Real-IP $remote_addr;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header X-Forwarded-Proto $scheme;
-              '';
-            };
+            "/oauth2/" = { inherit proxyPass; };
           };
       };
 
@@ -226,13 +185,9 @@ in
           proxyPass = "http://${config.variables.homelab.wireguard.ip}:${toString config.variables.immich.port}";
           proxyWebsockets = true;
           extraConfig = ''
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-
             client_max_body_size 50G;
-          '';
+          ''
+          + streamConfig;
         };
       };
 

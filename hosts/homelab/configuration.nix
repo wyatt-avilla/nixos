@@ -4,8 +4,8 @@
     ../../modules/common.nix
     ../../modules/server-common
     ./hardware-configuration.nix
+    ./storage
     ./syncthing.nix
-    ./storage.nix
     ./filebrowser.nix
     ./immich.nix
     ./microbin.nix

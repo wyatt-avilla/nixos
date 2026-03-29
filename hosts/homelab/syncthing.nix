@@ -5,7 +5,7 @@
   ...
 }:
 let
-  syncthingDir = "${config.storageDir}/syncthing";
+  syncthingDir = config.storage.paths.data.syncthing;
 in
 {
   services.syncthing = {

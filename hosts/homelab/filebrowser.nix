@@ -1,6 +1,6 @@
 { config, ... }:
 let
-  rootDir = "${config.storageDir}/filebrowser";
+  rootDir = config.storage.paths.data.filebrowser;
   databaseFile = "${rootDir}/.filebrowser/database.db";
 in
 {

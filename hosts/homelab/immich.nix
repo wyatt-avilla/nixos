@@ -8,7 +8,7 @@ in
     enable = true;
     openFirewall = true;
     accelerationDevices = null;
-    mediaLocation = "${config.storageDir}/immich";
+    mediaLocation = config.storage.paths.data.immich;
     host = config.variables.homelab.wireguard.ip;
     inherit user;
     inherit (config.variables.immich) port;

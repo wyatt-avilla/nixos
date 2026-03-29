@@ -1,6 +1,6 @@
 { lib, config, ... }:
 let
-  backupDiskMountPoint = builtins.dirOf config.backupDir;
+  backupDiskMountPoint = dirOf config.backupDir;
   directories = {
     syncthing = {
       owner = "syncthing";

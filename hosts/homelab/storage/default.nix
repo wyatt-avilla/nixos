@@ -19,12 +19,12 @@ let
       ensureSubvolume = true;
       backup = {
         snapshot = {
-          timer = "*-*-* 01:00:00";
-          retention = 7;
+          timer = "Sun 01:00:00";
+          retention = 3;
         };
         database = {
-          timer = "daily";
-          retention = 14;
+          timer = "Sun 00:30:00";
+          retention = 3;
         };
       };
     };
@@ -37,8 +37,8 @@ let
       ensureSubvolume = true;
       backup = {
         snapshot = {
-          timer = "*-*-* 01:30:00";
-          retention = 7;
+          timer = "Sun 01:30:00";
+          retention = 3;
         };
       };
     };

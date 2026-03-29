@@ -95,7 +95,7 @@ let
   snapshotTimers = lib.mapAttrs' (
     name: directory:
     lib.nameValuePair "${name}-backup" {
-      description = "Replicate ${name} snapshots daily";
+      description = "Replicate ${name} snapshots weekly";
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnCalendar = directory.backup.snapshot.timer;
@@ -158,7 +158,7 @@ in
         snapshotTimers
         // lib.optionalAttrs immichDatabaseBackupEnabled {
           "immich-db-backup" = {
-            description = "Run Immich PostgreSQL backups daily";
+            description = "Run Immich PostgreSQL backups weekly";
             wantedBy = [ "timers.target" ];
             timerConfig = {
               OnCalendar = directories.immich.backup.database.timer;

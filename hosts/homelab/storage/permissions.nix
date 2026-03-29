@@ -1,19 +1,44 @@
-{ pkgs, config, ... }:
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
+let
+  inherit (config.storage) directories;
+  dataPaths = config.storage.paths.data;
+
+  directoryRules = builtins.map (
+    name:
+    let
+      directory = directories.${name};
+    in
+    "d ${dataPaths.${name}} ${directory.mode} ${directory.owner} ${directory.group} -"
+  ) (builtins.attrNames directories);
+
+  linkRules = builtins.map (
+    link: "L+ ${dataPaths.${link.parent}}/${link.name} - - - - ${dataPaths.${link.target}}"
+  ) config.storage.links;
+
+  directoryFixups = lib.concatMapStrings (
+    name:
+    let
+      directory = directories.${name};
+    in
+    ''
+      chown ${directory.owner}:${directory.group} "${dataPaths.${name}}"
+      chmod ${directory.mode} "${dataPaths.${name}}"
+    ''
+  ) (builtins.attrNames directories);
+in
 {
   systemd = {
     tmpfiles.rules = [
-      "d ${config.storageDir} 0770 root storage -"
-      "d ${config.backupDir} 0770 root storage -"
-
-      "d ${config.storageDir}/syncthing 0770 syncthing storage -"
-      "d ${config.storageDir}/immich 0770 immich storage -"
-      "d ${config.storageDir}/filebrowser 0770 filebrowser storage -"
-      "d ${config.storageDir}/microbin 0770 microbin storage -"
-      "d ${config.storageDir}/audiobookshelf 0770 audiobookshelf storage -"
-
-      "L+ ${config.storageDir}/filebrowser/syncthing - - - - ${config.storageDir}/syncthing"
-      "L+ ${config.storageDir}/filebrowser/audiobookshelf - - - - ${config.storageDir}/audiobookshelf"
-    ];
+      "d ${config.storage.paths.root} 0770 root storage -"
+      "d ${config.storage.paths.backupRoot} 0770 root storage -"
+    ]
+    ++ directoryRules
+    ++ linkRules;
 
     services."fix-storage-dir-perms" = {
       description = "Ensure correct permissions for storage directories";
@@ -23,25 +48,12 @@
         Type = "oneshot";
         ExecStart = pkgs.writeShellScript "fix-storage-dir-perms" ''
           set -e
-          chown root:storage "${config.storageDir}"
-          chmod 0770 "${config.storageDir}"
-          chown root:storage "${config.backupDir}"
-          chmod 0770 "${config.backupDir}"
+          chown root:storage "${config.storage.paths.root}"
+          chmod 0770 "${config.storage.paths.root}"
+          chown root:storage "${config.storage.paths.backupRoot}"
+          chmod 0770 "${config.storage.paths.backupRoot}"
 
-          chown syncthing:storage "${config.storageDir}/syncthing"
-          chmod 0770 "${config.storageDir}/syncthing"
-
-          chown immich:storage "${config.storageDir}/immich"
-          chmod 0770 "${config.storageDir}/immich"
-
-          chown filebrowser:storage "${config.storageDir}/filebrowser"
-          chmod 0770 "${config.storageDir}/filebrowser"
-
-          chown microbin:storage "${config.storageDir}/microbin"
-          chmod 0770 "${config.storageDir}/microbin"
-
-          chown audiobookshelf:storage "${config.storageDir}/audiobookshelf"
-          chmod 0770 "${config.storageDir}/audiobookshelf"
+          ${directoryFixups}
         '';
       };
     };

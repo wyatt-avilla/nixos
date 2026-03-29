@@ -5,10 +5,24 @@
   ...
 }:
 let
+  subvolumeDirectories = lib.filterAttrs (
+    _: directory: directory.ensureSubvolume
+  ) config.storage.directories;
+  dataPaths = config.storage.paths.data;
   btrfs = lib.getExe' pkgs.btrfs-progs "btrfs";
   chown = lib.getExe' pkgs.coreutils "chown";
   chmod = lib.getExe' pkgs.coreutils "chmod";
+  find = lib.getExe' pkgs.findutils "find";
   rmdir = lib.getExe' pkgs.coreutils "rmdir";
+  ensureCommands = lib.concatMapStrings (
+    name:
+    let
+      directory = subvolumeDirectories.${name};
+    in
+    ''
+      ensure_subvolume "${dataPaths.${name}}" ${directory.owner} ${directory.group} ${directory.mode}
+    ''
+  ) (builtins.attrNames subvolumeDirectories);
 in
 {
   systemd.services."ensure-storage-subvolumes" = {
@@ -36,7 +50,7 @@ in
           fi
 
           if [ -e "$path" ]; then
-            if [ -d "$path" ] && [ -z "$(find "$path" -mindepth 1 -maxdepth 1 -print -quit)" ]; then
+            if [ -d "$path" ] && [ -z "$(${find} "$path" -mindepth 1 -maxdepth 1 -print -quit)" ]; then
               ${rmdir} "$path"
             else
               echo "Refusing to replace existing non-subvolume at $path" >&2
@@ -49,8 +63,7 @@ in
           ${chmod} "$mode" "$path"
         }
 
-        ensure_subvolume "${config.storageDir}/immich" immich storage 0770
-        ensure_subvolume "${config.storageDir}/filebrowser" filebrowser storage 0770
+        ${ensureCommands}
       '';
     };
   };

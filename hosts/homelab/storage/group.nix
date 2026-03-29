@@ -1,12 +1,13 @@
+{ config, lib, ... }:
+let
+  storageGroupedServices = lib.filterAttrs (
+    _: directory: directory.assignServiceGroup
+  ) config.storage.directories;
+in
 {
   users.groups.storage = { };
 
-  services = {
-    syncthing.group = "storage";
-    immich.group = "storage";
-    filebrowser.group = "storage";
-    audiobookshelf.group = "storage";
-  };
+  services = lib.mapAttrs (_: directory: { inherit (directory) group; }) storageGroupedServices;
 
   users.users = {
     microbin.extraGroups = [ "storage" ];

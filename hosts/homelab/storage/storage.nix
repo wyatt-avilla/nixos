@@ -13,19 +13,6 @@
   config = {
     services.btrfs.autoScrub.enable = true;
 
-    users.groups.storage = { };
-
-    services = {
-      syncthing.group = "storage";
-      immich.group = "storage";
-      filebrowser.group = "storage";
-      audiobookshelf.group = "storage";
-    };
-
-    users.users = {
-      microbin.extraGroups = [ "storage" ];
-    };
-
     systemd = {
       tmpfiles.rules = [
         "d ${config.storageDir} 0770 root storage -"

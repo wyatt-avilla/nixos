@@ -45,6 +45,12 @@
       fsType = "btrfs";
       options = [ "compress=zstd" ];
     };
+
+    "/mnt/wd_red_plus_4tb" = {
+      device = "/dev/disk/by-uuid/50d85676-b541-47c4-94d1-7e629516c646";
+      fsType = "btrfs";
+      options = [ "compress=zstd" ];
+    };
   };
 
   swapDevices = [ ];

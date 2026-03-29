@@ -1,7 +1,7 @@
 { config, lib, ... }:
 let
   inherit (config.variables.microbin) port;
-  dir = "${config.storageDir}/microbin";
+  dir = config.storage.paths.data.microbin;
 in
 {
   services.microbin = {

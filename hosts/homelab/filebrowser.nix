@@ -1,6 +1,7 @@
 { config, ... }:
 let
-  rootDir = "${config.storageDir}/filebrowser";
+  rootDir = config.storage.paths.data.filebrowser;
+  databaseFile = "${rootDir}/.filebrowser/database.db";
 in
 {
   services.filebrowser = {
@@ -10,6 +11,7 @@ in
       address = config.variables.homelab.wireguard.ip;
       inherit (config.variables.filebrowser) port;
       root = rootDir;
+      database = databaseFile;
     };
   };
 }

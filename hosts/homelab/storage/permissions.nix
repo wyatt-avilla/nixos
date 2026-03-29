@@ -4,6 +4,8 @@
   systemd = {
     tmpfiles.rules = [
       "d ${config.storageDir} 0770 root storage -"
+      "d ${config.backupDir} 0770 root storage -"
+
       "d ${config.storageDir}/syncthing 0770 syncthing storage -"
       "d ${config.storageDir}/immich 0770 immich storage -"
       "d ${config.storageDir}/filebrowser 0770 filebrowser storage -"
@@ -24,6 +26,8 @@
           set -e
           chown root:storage "${config.storageDir}"
           chmod 0770 "${config.storageDir}"
+          chown root:storage "${config.backupDir}"
+          chmod 0770 "${config.backupDir}"
 
           chown syncthing:storage "${config.storageDir}/syncthing"
           chmod 0770 "${config.storageDir}/syncthing"

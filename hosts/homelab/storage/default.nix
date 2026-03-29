@@ -1,5 +1,6 @@
 { lib, config, ... }:
 let
+  backupDiskMountPoint = builtins.dirOf config.backupDir;
   directories = {
     syncthing = {
       owner = "syncthing";
@@ -68,6 +69,7 @@ in
     ./backup.nix
     ./group.nix
     ./permissions.nix
+    ./spindown.nix
     ./subvolumes.nix
   ];
 
@@ -91,6 +93,12 @@ in
   config = {
     storage = {
       inherit directories;
+
+      backupDisk = {
+        deviceById = "/dev/disk/by-id/ata-WDC_WD40EFZZ-68CPAN0_WD-WX42DA59T1UC";
+        mountPoint = backupDiskMountPoint;
+        spindownMinutes = 5;
+      };
 
       links = [
         {

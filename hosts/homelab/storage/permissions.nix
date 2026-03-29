@@ -1,6 +1,5 @@
 { pkgs, config, ... }:
 {
-
   systemd = {
     tmpfiles.rules = [
       "d ${config.storageDir} 0770 root storage -"

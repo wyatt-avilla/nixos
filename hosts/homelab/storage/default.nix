@@ -4,6 +4,7 @@
     ./backup.nix
     ./group.nix
     ./permissions.nix
+    ./subvolumes.nix
   ];
 
   options.storageDir = lib.mkOption {

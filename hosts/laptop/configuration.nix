@@ -1,3 +1,4 @@
+{ pkgs, ... }:
 {
   imports = [
     ../../modules/common.nix
@@ -7,11 +8,17 @@
 
   networking.hostName = "zadkiel";
 
+  hardware.graphics = {
+    extraPackages = with pkgs; [ intel-vaapi-driver ];
+  };
+
+  # Sandy Bridge predates intel-media-driver/iHD; keep VA-API on i965.
+  environment.sessionVariables = {
+    LIBVA_DRIVER_NAME = "i965";
+  };
+
   boot = {
-    kernelParams = [
-      "video=1366x768"
-      "iomem=relaxed"
-    ];
+    kernelParams = [ "iomem=relaxed" ];
 
     initrd = {
       kernelModules = [ "i915" ];
@@ -27,11 +34,17 @@
     tlp = {
       enable = true;
       settings = {
-        CPU_SCALING_GOVERNOR_ON_AC = "performance";
-        CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+        CPU_SCALING_GOVERNOR_ON_AC = "schedutil";
+        CPU_SCALING_GOVERNOR_ON_BAT = "schedutil";
 
-        CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
-        CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+        CPU_ENERGY_PERF_POLICY_ON_AC = "balance_performance";
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
+
+        DEVICES_TO_DISABLE_ON_STARTUP = "bluetooth";
+        DEVICES_TO_DISABLE_ON_BAT_NOT_IN_USE = "bluetooth";
+
+        START_CHARGE_THRESH_BAT0 = 75;
+        STOP_CHARGE_THRESH_BAT0 = 80;
       };
     };
   };

@@ -68,6 +68,7 @@ in
   imports = [
     ./backup.nix
     ./group.nix
+    ./obsidian-vault-git.nix
     ./permissions.nix
     ./spindown.nix
     ./subvolumes.nix

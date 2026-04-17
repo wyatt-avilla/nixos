@@ -1,0 +1,96 @@
+name: Build Hosts
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  hosts:
+    name: Enumerate hosts
+    runs-on: ubuntu-latest
+
+    outputs:
+      hosts: ${{ steps.hosts.outputs.hosts }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up SSH key
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+        run: |
+          if [ -z "${SSH_DEPLOY_KEY:-}" ]; then
+            echo "SSH_DEPLOY_KEY is required to fetch private flake inputs."
+            exit 1
+          fi
+
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Enumerate host outputs
+        id: hosts
+        run: |
+          hosts="$(nix eval --json '.#nixosConfigurations' --apply builtins.attrNames)"
+          echo "hosts=$hosts" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build ${{ matrix.host }}
+    needs: hosts
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        host: ${{ fromJSON(needs.hosts.outputs.hosts) }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up SSH key
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+        run: |
+          if [ -z "${SSH_DEPLOY_KEY:-}" ]; then
+            echo "SSH_DEPLOY_KEY is required to fetch private flake inputs."
+            exit 1
+          fi
+
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Build host
+        env:
+          HOST: ${{ matrix.host }}
+        run: |
+          nix build --print-build-logs --no-link \
+            ".#nixosConfigurations.${HOST}.config.system.build.toplevel"

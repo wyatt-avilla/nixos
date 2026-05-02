@@ -1,1 +1,1 @@
-{ import = [ ./tmux.nix ]; }
+{ imports = [ ./tmux.nix ]; }

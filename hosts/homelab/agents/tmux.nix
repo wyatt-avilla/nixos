@@ -2,6 +2,7 @@
 let
   tmuxBin = "${lib.getExe pkgs.tmux}";
   resurrectSave = "${pkgs.tmuxPlugins.resurrect}/share/tmux-plugins/resurrect/scripts/save.sh";
+  targetUser = "wyatt";
 in
 {
   programs.tmux = {
@@ -16,13 +17,13 @@ in
     '';
   };
 
-  users.users.wyatt.linger = true;
+  users.users.${targetUser}.linger = true;
 
   systemd.user.services.wyatt-tmux = {
-    description = "Persistent tmux session for wyatt";
+    description = "Persistent tmux session for ${targetUser}";
     wantedBy = [ "default.target" ];
     unitConfig = {
-      ConditionUser = "wyatt";
+      ConditionUser = targetUser;
       Documentation = "man:tmux(1)";
     };
 
@@ -42,7 +43,7 @@ in
     serviceConfig = {
       Type = "forking";
       Environment = [
-        "HOME=/home/wyatt"
+        "HOME=/home/${targetUser}"
         "SHELL=${lib.getExe pkgs.zsh}"
         "TMUX_TMPDIR=%t"
       ];

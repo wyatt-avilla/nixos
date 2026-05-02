@@ -1,6 +1,6 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 let
-  tmuxBin = "${pkgs.tmux}/bin/tmux";
+  tmuxBin = "${lib.getExe pkgs.tmux}";
   resurrectSave = "${pkgs.tmuxPlugins.resurrect}/share/tmux-plugins/resurrect/scripts/save.sh";
 in
 {
@@ -43,7 +43,7 @@ in
       Type = "forking";
       Environment = [
         "HOME=/home/wyatt"
-        "SHELL=${pkgs.zsh}/bin/zsh"
+        "SHELL=${lib.getExe pkgs.zsh}"
         "TMUX_TMPDIR=%t"
       ];
       ExecStart = "${tmuxBin} -f /etc/tmux.conf new-session -d -s main";
@@ -51,7 +51,6 @@ in
         "-${resurrectSave} quiet"
         "-${tmuxBin} kill-server"
       ];
-      KillMode = "none";
       Restart = "always";
       RestartSec = "5s";
     };

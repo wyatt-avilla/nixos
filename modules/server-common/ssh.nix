@@ -1,37 +1,71 @@
-{ pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  inputs,
+  ...
+}:
 let
   sshUser = "wyatt";
   sshUserHome = config.users.users.${sshUser}.home;
 
-  desktopKey = "${config.variables.secretsDirectory}/desktop-ssh-key";
-  laptopKey = "${config.variables.secretsDirectory}/laptop-ssh-key";
-  vpsKey = "${config.variables.secretsDirectory}/vps-ssh-key";
+  plainTextKeys = [ inputs.nix-secrets.nixosModules.plainSecrets.phone.ssh.publicKey ];
+  pathBasedKeys = [
+    "${config.variables.secretsDirectory}/desktop-ssh-key"
+    "${config.variables.secretsDirectory}/laptop-ssh-key"
+    "${config.variables.secretsDirectory}/vps-ssh-key"
+  ];
+
+  shellArray =
+    values: lib.concatMapStringsSep "\n" (value: "      ${lib.escapeShellArg value}") values;
 
   authorizedKeysGenScript = pkgs.writeShellScript "auth-key-file-gen" ''
-    set -euo pipefail
+        set -euo pipefail
 
-    targetAuthorizedKeys="${sshUserHome}/.ssh/authorized_keys"
+        targetAuthorizedKeys="${sshUserHome}/.ssh/authorized_keys"
 
-    mkdir -p "$(dirname "$targetAuthorizedKeys")"
-    touch "$targetAuthorizedKeys"
+        mkdir -p "$(dirname "$targetAuthorizedKeys")"
+        touch "$targetAuthorizedKeys"
 
-    for keyFile in "${desktopKey}" "${laptopKey}" "${vpsKey}"; do
-      if [ -f "$keyFile" ]; then
-        key="$(cat "$keyFile")"
+        add_key() {
+          key="$1"
+          source="$2"
 
-        if ! grep -qF "$key" "$targetAuthorizedKeys"; then
-          echo "$key" >> "$targetAuthorizedKeys"
-          echo "Added key from $keyFile to authorized_keys"
-        else
-          echo "Key from $keyFile already present in authorized_keys"
-        fi
-      else
-        echo "Warning: Key file $keyFile not found"
-      fi
-    done
+          if [ -z "$key" ]; then
+            echo "Warning: Empty key from $source"
+            return
+          fi
 
-    chmod 600 "$targetAuthorizedKeys"
-    chown ${sshUser}:users "$targetAuthorizedKeys"
+          if ! grep -qF "$key" "$targetAuthorizedKeys"; then
+            echo "$key" >> "$targetAuthorizedKeys"
+            echo "Added key from $source to authorized_keys"
+          else
+            echo "Key from $source already present in authorized_keys"
+          fi
+        }
+
+        plainTextKeys=(
+    ${shellArray plainTextKeys}
+        )
+
+        pathBasedKeys=(
+    ${shellArray pathBasedKeys}
+        )
+
+        for key in "''${plainTextKeys[@]}"; do
+          add_key "$key" "plaintext key"
+        done
+
+        for keyFile in "''${pathBasedKeys[@]}"; do
+          if [ -f "$keyFile" ]; then
+            add_key "$(cat "$keyFile")" "$keyFile"
+          else
+            echo "Warning: Key file $keyFile not found"
+          fi
+        done
+
+        chmod 600 "$targetAuthorizedKeys"
+        chown ${sshUser}:users "$targetAuthorizedKeys"
   '';
 in
 {

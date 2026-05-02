@@ -1,1 +1,6 @@
-{ imports = [ ./tmux.nix ]; }
+{
+  imports = [
+    ./overlays.nix
+    ./tmux.nix
+  ];
+}

@@ -1,6 +1,38 @@
 { lib, pkgs, ... }:
 let
   tmuxBin = "${lib.getExe pkgs.tmux}";
+  tmuxEnsureSession = pkgs.writeShellApplication {
+    name = "tmux-ensure-session";
+    runtimeInputs = with pkgs; [
+      tmux
+    ];
+    text = ''
+      set -euo pipefail
+
+      session="main"
+      tmux_args=(-f /etc/tmux.conf)
+
+      if tmux "''${tmux_args[@]}" has-session -t "$session" 2>/dev/null; then
+        exit 0
+      fi
+
+      set +e
+      output=$(tmux "''${tmux_args[@]}" new-session -d -s "$session" 2>&1)
+      status=$?
+      set -e
+
+      if [[ "$status" -eq 0 ]]; then
+        exit 0
+      fi
+
+      if tmux "''${tmux_args[@]}" has-session -t "$session" 2>/dev/null; then
+        exit 0
+      fi
+
+      printf '%s\n' "$output" >&2
+      exit "$status"
+    '';
+  };
   tmuxGitStatus = pkgs.writeShellApplication {
     name = "tmux-git-status";
     runtimeInputs = with pkgs; [
@@ -92,7 +124,7 @@ in
         "SHELL=${lib.getExe pkgs.zsh}"
         "TMUX_TMPDIR=%t"
       ];
-      ExecStart = "${tmuxBin} -f /etc/tmux.conf new-session -d -s main";
+      ExecStart = lib.getExe tmuxEnsureSession;
       ExecStop = [
         "-${resurrectSave} quiet"
         "-${tmuxBin} kill-server"

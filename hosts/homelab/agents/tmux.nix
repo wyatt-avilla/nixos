@@ -3,9 +3,7 @@ let
   tmuxBin = "${lib.getExe pkgs.tmux}";
   tmuxEnsureSession = pkgs.writeShellApplication {
     name = "tmux-ensure-session";
-    runtimeInputs = with pkgs; [
-      tmux
-    ];
+    runtimeInputs = with pkgs; [ tmux ];
     text = ''
       set -euo pipefail
 
@@ -96,7 +94,7 @@ in
 
   users.users.${targetUser}.linger = true;
 
-  systemd.user.services.wyatt-tmux = {
+  systemd.user.services.agent-tmux = {
     description = "Persistent tmux session for ${targetUser}";
     wantedBy = [ "default.target" ];
     unitConfig = {

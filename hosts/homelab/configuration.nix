@@ -5,6 +5,7 @@
     ../../modules/server-common
     ./hardware-configuration.nix
     ./storage
+    ./agents
     ./syncthing.nix
     ./filebrowser.nix
     ./immich.nix

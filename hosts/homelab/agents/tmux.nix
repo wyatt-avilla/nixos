@@ -87,7 +87,7 @@ in
       set -g @continuum-save-interval '15'
     '';
     extraConfig = ''
-      set -g mode-mouse on
+      set -g mouse on
       set -g status-interval 5
       set -g status-right "#(${lib.getExe tmuxGitStatus} #{q:pane_current_path})"
     '';

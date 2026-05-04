@@ -4,6 +4,7 @@
     ./hardware-configuration.nix
     ../../modules/server-common
     ../../modules/common.nix
+    ./deploy
     ./do-networking.nix
     ./wireguard.nix
     ./oauth2-proxy.nix

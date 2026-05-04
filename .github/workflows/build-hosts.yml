@@ -94,3 +94,69 @@ jobs:
         run: |
           nix build --print-build-logs --no-link \
             ".#nixosConfigurations.${HOST}.config.system.build.toplevel"
+
+  deploy:
+    name: Trigger deploy
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      deployments: write
+    environment:
+      name: production
+      url: https://deploy.wyatt.wtf
+
+    steps:
+      - name: Trigger VPS webhook
+        env:
+          DEPLOY_WEBHOOK_SECRET: ${{ secrets.DEPLOY_WEBHOOK_SECRET }}
+          DEPLOY_WEBHOOK_URL: https://deploy.wyatt.wtf/hooks/nixos-deploy
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          if [ -z "${DEPLOY_WEBHOOK_SECRET:-}" ]; then
+            echo "DEPLOY_WEBHOOK_SECRET is required to trigger deployment."
+            exit 1
+          fi
+
+          python - <<'PY'
+          import hashlib
+          import hmac
+          import json
+          import os
+          import subprocess
+
+          payload = {
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "ref": os.environ["GITHUB_REF"],
+              "sha": os.environ["GITHUB_SHA"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "target": "all",
+          }
+
+          body = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode()
+          secret = os.environ["DEPLOY_WEBHOOK_SECRET"].encode()
+          signature = hmac.new(secret, body, hashlib.sha256).hexdigest()
+
+          subprocess.run(
+              [
+                  "curl",
+                  "--fail",
+                  "--show-error",
+                  "--silent",
+                  "--request",
+                  "POST",
+                  "--header",
+                  "Content-Type: application/json",
+                  "--header",
+                  f"X-Hub-Signature-256: sha256={signature}",
+                  "--data-binary",
+                  "@-",
+                  os.environ["DEPLOY_WEBHOOK_URL"],
+              ],
+              input=body,
+              check=True,
+          )
+          PY

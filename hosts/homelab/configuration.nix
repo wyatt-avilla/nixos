@@ -15,6 +15,7 @@
     ./wyattwtf.nix
     ./wireguard.nix
     ./audiobookshelf.nix
+    ./deploy.nix
   ];
 
   networking.hostName = "barachiel";

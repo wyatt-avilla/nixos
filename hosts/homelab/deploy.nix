@@ -11,7 +11,11 @@ let
   repoUrl = "git@github.com:wyatt-avilla/nixos.git";
   deployUser = "deploy";
 
-  gitDeployKey = "${config.variables.secretsDirectory}/deploy-git-ssh-key";
+  gitSshKey =
+    (lib.findFirst (
+      key: key.type == "ed25519"
+    ) (throw "homelab deploy requires an ed25519 OpenSSH host key") config.services.openssh.hostKeys)
+    .path;
   triggerPublicKey = "${config.variables.secretsDirectory}/homelab-deploy-trigger-public-key";
   vpsDeployKey = "${config.variables.secretsDirectory}/vps-deploy-private-key";
   vpsHost = "deploy@${config.variables.vps.wireguard.ip}";
@@ -51,7 +55,7 @@ let
       fi
 
       export HOME=${deployHome}
-      export GIT_SSH_COMMAND="${lib.getExe pkgs.openssh} -i ${gitDeployKey} -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+      export GIT_SSH_COMMAND="${lib.getExe pkgs.openssh} -i ${gitSshKey} -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
 
       install -d -m 700 ${deployHome}
       install -d -m 755 ${repoPath}

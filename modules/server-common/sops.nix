@@ -25,6 +25,7 @@ let
       mode ? "400",
       wantedBy ? [ "multi-user.target" ],
       before ? [ ],
+      stripFinalNewline ? true,
     }:
     let
       copyScript = pkgs.writeShellScript "copy-secret-${name}" ''
@@ -37,7 +38,12 @@ let
           mkdir -p "$dest_dir"
         fi
 
-        ${lib.getExe pkgs.perl} -pe 'chomp if eof' "${source}" > "${dest}"
+        ${
+          if stripFinalNewline then
+            ''${lib.getExe pkgs.perl} -pe 'chomp if eof' "${source}" > "${dest}"''
+          else
+            ''${pkgs.coreutils}/bin/cat "${source}" > "${dest}"''
+        }
         chown "${user}":"${group}" "${dest}"
         chmod "${mode}" "${dest}"
 

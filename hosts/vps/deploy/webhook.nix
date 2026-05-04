@@ -132,6 +132,7 @@ in
       inherit (config.services.webhook) user group;
       mode = "400";
       before = [ "webhook.service" ];
+      stripFinalNewline = false;
     })
     // {
       webhook = {

@@ -95,37 +95,49 @@
         let
           ageKey = builtins.getEnv "SOPS_AGE_KEY";
           hashedPassword = builtins.getEnv "HASHED_PASSWORD";
+          missingVpsImageInputs =
+            nixpkgs.lib.optionals (ageKey == "") [ "SOPS_AGE_KEY" ]
+            ++ nixpkgs.lib.optionals (hashedPassword == "") [ "HASHED_PASSWORD" ];
+          skippedVpsImageMessage = "skipping VPS image build because ${nixpkgs.lib.concatStringsSep " and " missingVpsImageInputs} ${
+            if builtins.length missingVpsImageInputs == 1 then "is" else "are"
+          } not set. Use `nix run .#build-vps-image` to provide the impure inputs.";
+          skippedVpsImage = nixpkgs.lib.warn skippedVpsImageMessage (
+            pkgs.runCommand "vps-image-skipped" { } ''
+              echo ${nixpkgs.lib.escapeShellArg "warning: ${skippedVpsImageMessage}"} >&2
+              mkdir -p "$out"
+              printf '%s\n' ${nixpkgs.lib.escapeShellArg skippedVpsImageMessage} > "$out/README"
+            ''
+          );
         in
         {
           vpsImage =
-            (nixpkgs.lib.nixosSystem {
-              specialArgs = {
-                inherit system;
-                inherit (self) inputs;
-              };
+            if missingVpsImageInputs == [ ] then
+              (nixpkgs.lib.nixosSystem {
+                specialArgs = {
+                  inherit system;
+                  inherit (self) inputs;
+                };
 
-              modules = [
-                ./hosts/vps/configuration.nix
-                inputs.nix-secrets.nixosModules.vps
-                {
-                  sops.age = {
-                    keyFile = nixpkgs.lib.mkForce "/etc/sops/age-key";
-                    sshKeyPaths = [ ];
-                  };
+                modules = [
+                  ./hosts/vps/configuration.nix
+                  inputs.nix-secrets.nixosModules.vps
+                  {
+                    sops.age = {
+                      keyFile = nixpkgs.lib.mkForce "/etc/sops/age-key";
+                      sshKeyPaths = [ ];
+                    };
 
-                  environment.etc."sops/age-key" = {
-                    text = nixpkgs.lib.throwIfNot (
-                      ageKey != ""
-                    ) "SOPS_AGE_KEY must be set. Use: nix run .#build-vps-image" ageKey;
-                    mode = "0400";
-                  };
+                    environment.etc."sops/age-key" = {
+                      text = ageKey;
+                      mode = "0400";
+                    };
 
-                  users.users.wyatt.hashedPassword = nixpkgs.lib.throwIfNot (
-                    hashedPassword != ""
-                  ) "HASHED_PASSWORD must be set. Use: nix run .#build-vps-image" hashedPassword;
-                }
-              ];
-            }).config.system.build.images.digital-ocean;
+                    users.users.wyatt.hashedPassword = hashedPassword;
+                  }
+                ];
+              }).config.system.build.images.digital-ocean
+            else
+              skippedVpsImage;
         };
 
       apps.${system}.build-vps-image =

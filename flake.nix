@@ -9,7 +9,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-checks = {
+    nix-ci = {
       url = "git+ssh://git@github.com/wyatt-avilla/nix-ci";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -27,7 +27,7 @@
     inputs@{
       self,
       nixpkgs,
-      nix-checks,
+      nix-ci,
       ...
     }:
     let
@@ -39,6 +39,11 @@
         config = {
           allowUnfree = true;
         };
+      };
+
+      ci = nix-ci.lib.mkProject {
+        inherit pkgs;
+        src = self;
       };
     in
     {
@@ -153,32 +158,10 @@
           program = "${script}/bin/build-vps-image";
         };
 
-      devShells.${system}.default = pkgs.mkShell {
-        packages = with pkgs; [
-          pre-commit
-          nixfmt-rfc-style
-          statix
-        ];
-        shellHook = ''
-          pre-commit install
-        '';
-      };
+      formatter.${system} = ci.formatter;
 
-      checks.${system} = {
-        formatting = nix-checks.lib.mkFormattingCheck {
-          inherit pkgs;
-          src = self;
-        };
+      devShells.${system}.default = ci.devShell;
 
-        linting = nix-checks.lib.mkLintingCheck {
-          inherit pkgs;
-          src = self;
-        };
-
-        dead-code = nix-checks.lib.mkDeadCodeCheck {
-          inherit pkgs;
-          src = self;
-        };
-      };
+      checks.${system} = ci.checks;
     };
 }

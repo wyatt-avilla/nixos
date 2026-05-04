@@ -6,8 +6,10 @@
   ...
 }:
 let
-  sshUser = "wyatt";
+  sshUser = config.variables.ssh.user;
   sshUserHome = config.users.users.${sshUser}.home;
+  sshPrivateKeyFile = config.variables.ssh.privateKeyFile;
+  sshPublicKeyFile = config.variables.ssh.publicKeyFile;
 
   plainTextKeys = [ inputs.nix-secrets.nixosModules.plainSecrets.phone.ssh.publicKey ];
   pathBasedKeys = [
@@ -69,22 +71,63 @@ let
   '';
 in
 {
-  services.openssh = {
-    enable = true;
-    settings = {
-      PermitRootLogin = "no";
-      PasswordAuthentication = false;
-      KbdInteractiveAuthentication = false;
+  options.variables.ssh = {
+    user = lib.mkOption {
+      type = lib.types.str;
+      default = "wyatt";
+    };
+
+    privateKeyFile = lib.mkOption {
+      type = lib.types.path;
+      default = "/etc/ssh/${config.networking.hostName}_ed25519";
+    };
+
+    publicKeyFile = lib.mkOption {
+      type = lib.types.path;
+      default = "${config.variables.ssh.privateKeyFile}.pub";
+    };
+
+    privateKeyCopyService = lib.mkOption {
+      type = lib.types.str;
+      default = "copy-secret-ssh-copy-private-key.service";
     };
   };
 
-  systemd.services.auth-key-file-gen = {
-    description = "Adds specified keys to the server's authorized SSH keys";
-    wantedBy = [ "default.target" ];
-
-    serviceConfig = {
-      ExecStart = authorizedKeysGenScript;
-      Type = "oneshot";
+  config = {
+    services.openssh = {
+      enable = true;
+      settings = {
+        PermitRootLogin = "no";
+        PasswordAuthentication = false;
+        KbdInteractiveAuthentication = false;
+      };
     };
+
+    systemd.services =
+      (config.secrets.mkCopyService {
+        name = "ssh-copy-private-key";
+        source = "${config.variables.secretsDirectory}/ssh-private-key";
+        dest = sshPrivateKeyFile;
+        mode = "400";
+        stripFinalNewline = false;
+      })
+      // (config.secrets.mkCopyService {
+        name = "ssh-copy-public-key";
+        source = "${config.variables.secretsDirectory}/ssh-public-key";
+        dest = sshPublicKeyFile;
+        mode = "444";
+        stripFinalNewline = false;
+      })
+      // {
+        auth-key-file-gen = {
+          description = "Adds specified keys to the server's authorized SSH keys";
+          wantedBy = [ "default.target" ];
+
+          serviceConfig = {
+            ExecStart = authorizedKeysGenScript;
+            Type = "oneshot";
+          };
+        };
+      };
   };
 }

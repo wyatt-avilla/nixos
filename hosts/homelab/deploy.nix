@@ -11,11 +11,8 @@ let
   repoUrl = "git@github.com:wyatt-avilla/nixos.git";
   deployUser = "deploy";
 
-  gitSshKey =
-    (lib.findFirst (
-      key: key.type == "ed25519"
-    ) (throw "homelab deploy requires an ed25519 OpenSSH host key") config.services.openssh.hostKeys)
-    .path;
+  gitSshKey = config.variables.ssh.privateKeyFile;
+  copyGitSshKeyService = config.variables.ssh.privateKeyCopyService;
   triggerPublicKey = "${config.variables.secretsDirectory}/homelab-deploy-trigger-public-key";
   vpsDeployKey = "${config.variables.secretsDirectory}/vps-deploy-private-key";
   vpsHost = "deploy@${config.variables.vps.wireguard.ip}";
@@ -184,32 +181,36 @@ in
 
   users.groups.${deployUser} = { };
 
-  systemd.services.deploy-homelab-authorized-keys = {
-    description = "Installs the homelab deploy trigger authorized key";
-    wantedBy = [ "default.target" ];
-    serviceConfig = {
-      ExecStart = lib.getExe authorizedKeysScript;
-      Type = "oneshot";
+  systemd.services = {
+    deploy-homelab-authorized-keys = {
+      description = "Installs the homelab deploy trigger authorized key";
+      wantedBy = [ "default.target" ];
+      serviceConfig = {
+        ExecStart = lib.getExe authorizedKeysScript;
+        Type = "oneshot";
+      };
     };
-  };
 
-  systemd.services."nixos-auto-deploy@" = {
-    description = "Builds and deploys NixOS hosts at commit %i";
-    after = [
-      "network-online.target"
-      "wireguard-wg0.service"
-    ];
-    wants = [ "network-online.target" ];
-    path = with pkgs; [
-      nix
-      openssh
-    ];
-    serviceConfig = {
-      ExecStart = "${lib.getExe deployScript} %i";
-      Type = "oneshot";
-      StateDirectory = "deploy/nixos-config";
-      WorkingDirectory = repoPath;
-      TimeoutStartSec = "2h";
+    "nixos-auto-deploy@" = {
+      description = "Builds and deploys NixOS hosts at commit %i";
+      after = [
+        "network-online.target"
+        "wireguard-wg0.service"
+        copyGitSshKeyService
+      ];
+      requires = [ copyGitSshKeyService ];
+      wants = [ "network-online.target" ];
+      path = with pkgs; [
+        nix
+        openssh
+      ];
+      serviceConfig = {
+        ExecStart = "${lib.getExe deployScript} %i";
+        Type = "oneshot";
+        StateDirectory = "deploy/nixos-config";
+        WorkingDirectory = repoPath;
+        TimeoutStartSec = "2h";
+      };
     };
   };
 

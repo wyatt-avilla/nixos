@@ -134,10 +134,7 @@ let
 
   forcedCommandScript = pkgs.writeShellApplication {
     name = "homelab-deploy-ssh";
-    runtimeInputs = with pkgs; [
-      coreutils
-      sudo
-    ];
+    runtimeInputs = with pkgs; [ coreutils ];
     text = ''
       set -euo pipefail
 
@@ -148,7 +145,7 @@ let
         exit 64
       fi
 
-      exec sudo ${lib.getExe rootTriggerScript} "''${BASH_REMATCH[1]}"
+      exec /run/wrappers/bin/sudo ${lib.getExe rootTriggerScript} "''${BASH_REMATCH[1]}"
     '';
   };
 

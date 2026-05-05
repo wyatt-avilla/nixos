@@ -34,7 +34,6 @@ in
     source = "${config.variables.secretsDirectory}/wireguard-private-key";
     dest = privateKeyFile;
     mode = "600";
-    before = [ "wireguard-wg0.service" ];
-    requiredBy = [ "wireguard-wg0.service" ];
+    consumerService = config.systemd.services."wireguard-${wgInterface}";
   };
 }

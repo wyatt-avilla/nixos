@@ -23,14 +23,21 @@ let
       user ? "root",
       group ? "root",
       mode ? "400",
+      consumerService ? null,
       before ? [ ],
       requiredBy ? [ ],
       wantedBy ? null,
       stripFinalNewline ? true,
     }:
     let
+      consumerServiceUnit = lib.optional (consumerService != null) consumerService.name;
+      effectiveBefore = lib.unique (before ++ consumerServiceUnit);
+      effectiveRequiredBy = lib.unique (requiredBy ++ consumerServiceUnit);
       effectiveWantedBy =
-        if wantedBy == null then lib.optionals (requiredBy == [ ]) [ "multi-user.target" ] else wantedBy;
+        if wantedBy == null then
+          lib.optionals (effectiveRequiredBy == [ ]) [ "multi-user.target" ]
+        else
+          wantedBy;
       copyScript = pkgs.writeShellScript "copy-secret-${name}" ''
         set -euo pipefail
         echo "[${name}] Copying ${source} to ${dest}"
@@ -64,7 +71,8 @@ let
     {
       "copy-secret-${name}" = {
         description = "Copies decrypted ${name} secret to ${dest}";
-        inherit before requiredBy;
+        before = effectiveBefore;
+        requiredBy = effectiveRequiredBy;
         wantedBy = effectiveWantedBy;
         serviceConfig = {
           ExecStart = copyScript;

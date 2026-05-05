@@ -48,7 +48,6 @@ in
     dest = clientSecretFile;
     inherit user;
     mode = "400";
-    before = [ "immich-server.service" ];
-    requiredBy = [ "immich-server.service" ];
+    consumerService = config.systemd.services.immich-server;
   };
 }

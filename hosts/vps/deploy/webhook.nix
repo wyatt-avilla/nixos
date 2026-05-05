@@ -258,8 +258,7 @@ in
       dest = homelabTriggerKeyFile;
       inherit (config.services.webhook) user group;
       mode = "400";
-      before = [ "webhook.service" ];
-      requiredBy = [ "webhook.service" ];
+      consumerService = config.systemd.services.webhook;
       stripFinalNewline = false;
     })
     // {

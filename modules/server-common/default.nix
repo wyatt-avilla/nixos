@@ -9,6 +9,13 @@
 
   config = {
     environment.systemPackages = with pkgs; [ btop ];
+
+    nix.gc = {
+      automatic = true;
+      dates = "03:15";
+      options = "--delete-older-than 1d";
+      persistent = true;
+    };
   };
 
   options.variables.domain = lib.mkOption {

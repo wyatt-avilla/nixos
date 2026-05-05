@@ -56,14 +56,9 @@ jobs:
           echo "hosts=$hosts" >> "$GITHUB_OUTPUT"
 
   build:
-    name: Build ${{ matrix.host }}
+    name: Build hosts
     needs: hosts
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        host: ${{ fromJSON(needs.hosts.outputs.hosts) }}
 
     steps:
       - name: Checkout
@@ -73,6 +68,16 @@ jobs:
         uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Restore Nix build cache
+        id: nix-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .nix-build-cache
+          key: nix-hosts-${{ runner.os }}-${{ hashFiles('flake.lock') }}-${{ github.sha }}
+          restore-keys: |
+            nix-hosts-${{ runner.os }}-${{ hashFiles('flake.lock') }}-
+            nix-hosts-${{ runner.os }}-
 
       - name: Set up SSH key
         env:
@@ -88,12 +93,34 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-      - name: Build host
+      - name: Build hosts
         env:
-          HOST: ${{ matrix.host }}
+          HOSTS: ${{ needs.hosts.outputs.hosts }}
         run: |
+          mkdir -p .nix-build-cache
+
+          mapfile -t build_targets < <(
+            jq -r '.[] | ".#nixosConfigurations.\(.).config.system.build.toplevel"' <<< "$HOSTS"
+          )
+
+          cache_args=()
+          if [ -f .nix-build-cache/nix-cache-info ]; then
+            cache_args+=(--extra-substituters "file://$PWD/.nix-build-cache?trusted=1")
+          fi
+
           nix build --print-build-logs --no-link \
-            ".#nixosConfigurations.${HOST}.config.system.build.toplevel"
+            "${cache_args[@]}" \
+            "${build_targets[@]}"
+
+          nix copy --to "file://$PWD/.nix-build-cache?compression=zstd" \
+            "${build_targets[@]}"
+
+      - name: Save Nix build cache
+        if: always() && steps.nix-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .nix-build-cache
+          key: nix-hosts-${{ runner.os }}-${{ hashFiles('flake.lock') }}-${{ github.sha }}
 
   deploy:
     name: Deploy hosts

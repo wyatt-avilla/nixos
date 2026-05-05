@@ -1,8 +1,9 @@
 { config, inputs, ... }:
 let
   tokenFile = "/var/lib/claude-discord-bot/discord-token";
-  botGroup = config.systemd.services.claude-discord-bot.serviceConfig.Group;
-  botUser = config.systemd.services.claude-discord-bot.serviceConfig.User;
+  botService = config.systemd.services.claude-discord-bot;
+  botGroup = botService.serviceConfig.Group;
+  botUser = botService.serviceConfig.User;
 in
 {
   imports = [ inputs.claude-discord-bot.nixosModules.claude-discord-bot ];
@@ -18,7 +19,6 @@ in
     dest = tokenFile;
     user = botUser;
     group = botGroup;
-    before = [ "claude-discord-bot.service" ];
-    wantedBy = [ "claude-discord-bot.service" ];
+    consumerService = botService;
   };
 }

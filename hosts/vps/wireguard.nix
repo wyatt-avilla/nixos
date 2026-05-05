@@ -1,7 +1,7 @@
 { config, inputs, ... }:
 let
   privateKeyFile = "/etc/wireguard/private.key";
-  copyPrivateKeyService = "copy-secret-vps-copy-wireguard-private-key.service";
+  wgInterface = "wg0";
 in
 {
   networking.firewall = {
@@ -9,7 +9,7 @@ in
   };
 
   networking.wireguard.interfaces = {
-    wg0 = {
+    ${wgInterface} = {
       ips = [ "${config.variables.vps.wireguard.ip}/24" ];
 
       listenPort = config.variables.vps.wireguard.port;
@@ -25,18 +25,11 @@ in
     };
   };
 
-  systemd.services =
-    (config.secrets.mkCopyService {
-      name = "vps-copy-wireguard-private-key";
-      source = "${config.variables.secretsDirectory}/wireguard-private-key";
-      dest = privateKeyFile;
-      mode = "600";
-      before = [ "wireguard-wg0.service" ];
-    })
-    // {
-      wireguard-wg0 = {
-        requires = [ copyPrivateKeyService ];
-        after = [ copyPrivateKeyService ];
-      };
-    };
+  systemd.services = config.secrets.mkCopyService {
+    name = "vps-copy-wireguard-private-key";
+    source = "${config.variables.secretsDirectory}/wireguard-private-key";
+    dest = privateKeyFile;
+    mode = "600";
+    consumerService = config.systemd.services."wireguard-${wgInterface}";
+  };
 }

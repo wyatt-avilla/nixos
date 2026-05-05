@@ -21,15 +21,13 @@ in
       source = "${config.variables.secretsDirectory}/lastfm-api-key";
       dest = lastfmApiKeyPath;
       inherit user group;
-      before = [ "wyattwtf.service" ];
-      wantedBy = [ "wyattwtf.service" ];
+      consumerService = config.systemd.services.wyattwtf;
     })
     // (config.secrets.mkCopyService {
       name = "wyattwtf-goodreads-rss-url";
       source = "${config.variables.secretsDirectory}/goodreads-rss-url";
       dest = goodreadsRssUrlPath;
       inherit user group;
-      before = [ "wyattwtf.service" ];
-      wantedBy = [ "wyattwtf.service" ];
+      consumerService = config.systemd.services.wyattwtf;
     });
 }

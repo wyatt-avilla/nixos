@@ -1,6 +1,8 @@
 { lib, config, ... }:
 let
+  tunnelName = "homelab";
   credentialsFile = "/etc/cloudflared/homelab.json";
+  tunnelService = config.systemd.services."cloudflared-tunnel-${tunnelName}";
 in
 {
   options.variables.localip = lib.mkOption {
@@ -12,7 +14,7 @@ in
     services.cloudflared = {
       enable = true;
       tunnels = {
-        "homelab" = {
+        ${tunnelName} = {
           inherit credentialsFile;
           ingress = {
             ${config.variables.domain} = {
@@ -35,6 +37,7 @@ in
       source = "${config.variables.secretsDirectory}/cloudflared-credentials";
       dest = credentialsFile;
       mode = "600";
+      consumerService = tunnelService;
     };
   };
 }

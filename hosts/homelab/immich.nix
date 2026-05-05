@@ -48,5 +48,6 @@ in
     dest = clientSecretFile;
     inherit user;
     mode = "400";
+    consumerService = config.systemd.services.immich-server;
   };
 }

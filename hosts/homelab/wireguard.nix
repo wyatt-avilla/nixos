@@ -3,7 +3,6 @@ let
   privateKeyFile = "/etc/wireguard/private.key";
 
   wgInterface = "wg0";
-  copyPrivateKeyService = "copy-secret-homelab-copy-wireguard-private-key.service";
 in
 {
   networking = {
@@ -30,18 +29,11 @@ in
     };
   };
 
-  systemd.services =
-    (config.secrets.mkCopyService {
-      name = "homelab-copy-wireguard-private-key";
-      source = "${config.variables.secretsDirectory}/wireguard-private-key";
-      dest = privateKeyFile;
-      mode = "600";
-      before = [ "wireguard-wg0.service" ];
-    })
-    // {
-      wireguard-wg0 = {
-        requires = [ copyPrivateKeyService ];
-        after = [ copyPrivateKeyService ];
-      };
-    };
+  systemd.services = config.secrets.mkCopyService {
+    name = "homelab-copy-wireguard-private-key";
+    source = "${config.variables.secretsDirectory}/wireguard-private-key";
+    dest = privateKeyFile;
+    mode = "600";
+    consumerService = config.systemd.services."wireguard-${wgInterface}";
+  };
 }

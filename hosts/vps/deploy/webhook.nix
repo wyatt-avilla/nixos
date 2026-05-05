@@ -13,7 +13,6 @@ let
   webhookSecretFile = "${config.variables.secretsDirectory}/deploy-webhook-secret";
   homelabTriggerKeyFile = "/etc/deploy/homelab-trigger-key";
   homelabTriggerKeySecret = "${config.variables.secretsDirectory}/homelab-deploy-trigger-private-key";
-  copyTriggerKeyService = "copy-secret-deploy-copy-homelab-trigger-key.service";
 
   relayScript = pkgs.writeShellApplication {
     name = "relay-nixos-deploy";
@@ -259,13 +258,11 @@ in
       dest = homelabTriggerKeyFile;
       inherit (config.services.webhook) user group;
       mode = "400";
-      before = [ "webhook.service" ];
+      consumerService = config.systemd.services.webhook;
       stripFinalNewline = false;
     })
     // {
       webhook = {
-        requires = [ copyTriggerKeyService ];
-        after = [ copyTriggerKeyService ];
         serviceConfig = {
           LoadCredential = [ "deploy-webhook-secret:${webhookSecretFile}" ];
           StateDirectory = "webhook";

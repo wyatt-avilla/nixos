@@ -23,11 +23,21 @@ let
       user ? "root",
       group ? "root",
       mode ? "400",
-      wantedBy ? [ "multi-user.target" ],
+      consumerService ? null,
       before ? [ ],
+      requiredBy ? [ ],
+      wantedBy ? null,
       stripFinalNewline ? true,
     }:
     let
+      consumerServiceUnit = lib.optional (consumerService != null) consumerService.name;
+      effectiveBefore = lib.unique (before ++ consumerServiceUnit);
+      effectiveRequiredBy = lib.unique (requiredBy ++ consumerServiceUnit);
+      effectiveWantedBy =
+        if wantedBy == null then
+          lib.optionals (effectiveRequiredBy == [ ]) [ "multi-user.target" ]
+        else
+          wantedBy;
       copyScript = pkgs.writeShellScript "copy-secret-${name}" ''
         set -euo pipefail
         echo "[${name}] Copying ${source} to ${dest}"
@@ -38,14 +48,22 @@ let
           mkdir -p "$dest_dir"
         fi
 
+        tmp_file=$(mktemp "$dest_dir/.${name}.XXXXXX")
+        cleanup() {
+          rm -f "$tmp_file"
+        }
+        trap cleanup EXIT
+
         ${
           if stripFinalNewline then
-            ''${lib.getExe pkgs.perl} -pe 'chomp if eof' "${source}" > "${dest}"''
+            ''${lib.getExe pkgs.perl} -pe 'chomp if eof' "${source}" > "$tmp_file"''
           else
-            ''${pkgs.coreutils}/bin/cat "${source}" > "${dest}"''
+            ''${pkgs.coreutils}/bin/cat "${source}" > "$tmp_file"''
         }
-        chown "${user}":"${group}" "${dest}"
-        chmod "${mode}" "${dest}"
+        chown "${user}":"${group}" "$tmp_file"
+        chmod "${mode}" "$tmp_file"
+        mv -f "$tmp_file" "${dest}"
+        trap - EXIT
 
         echo "[${name}] Credentials installed with ${user}:${group} ownership and ${mode} perms"
       '';
@@ -53,7 +71,9 @@ let
     {
       "copy-secret-${name}" = {
         description = "Copies decrypted ${name} secret to ${dest}";
-        inherit wantedBy before;
+        before = effectiveBefore;
+        requiredBy = effectiveRequiredBy;
+        wantedBy = effectiveWantedBy;
         serviceConfig = {
           ExecStart = copyScript;
           Type = "oneshot";

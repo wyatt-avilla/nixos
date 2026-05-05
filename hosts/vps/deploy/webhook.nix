@@ -18,33 +18,70 @@ let
   relayScript = pkgs.writeShellApplication {
     name = "relay-nixos-deploy";
     runtimeInputs = with pkgs; [
+      coreutils
       openssh
     ];
     text = ''
       set -euo pipefail
 
-      if [ "$#" -ne 1 ]; then
-        echo "usage: relay-nixos-deploy <sha>" >&2
+      if [ "$#" -lt 2 ]; then
+        echo "usage: relay-nixos-deploy start <run-id> <sha> | status <run-id>" >&2
         exit 64
       fi
 
-      sha="$1"
+      command="$1"
+      shift
 
-      case "$sha" in
-        [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]) ;;
+      ssh_common=(
+        -i ${lib.escapeShellArg homelabTriggerKeyFile}
+        -o IdentitiesOnly=yes
+        -o StrictHostKeyChecking=accept-new
+        -o UserKnownHostsFile=/var/lib/webhook/known_hosts
+        deploy@${config.variables.homelab.wireguard.ip}
+      )
+
+      case "$command" in
+        start)
+          if [ "$#" -ne 2 ]; then
+            echo "usage: relay-nixos-deploy start <run-id> <sha>" >&2
+            exit 64
+          fi
+
+          run_id="$1"
+          sha="$2"
+
+          if [[ ! "$run_id" =~ ^[0-9]+$ ]]; then
+            echo "invalid run id: $run_id" >&2
+            exit 65
+          fi
+
+          if [[ ! "$sha" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "invalid sha: $sha" >&2
+            exit 65
+          fi
+
+          exec ssh "''${ssh_common[@]}" -- deploy-start "$run_id" "$sha"
+          ;;
+        status)
+          if [ "$#" -ne 1 ]; then
+            echo "usage: relay-nixos-deploy status <run-id>" >&2
+            exit 64
+          fi
+
+          run_id="$1"
+
+          if [[ ! "$run_id" =~ ^[0-9]+$ ]]; then
+            echo "invalid run id: $run_id" >&2
+            exit 65
+          fi
+
+          exec ssh "''${ssh_common[@]}" -- deploy-status "$run_id"
+          ;;
         *)
-          echo "invalid sha: $sha" >&2
-          exit 65
+          echo "usage: relay-nixos-deploy start <run-id> <sha> | status <run-id>" >&2
+          exit 64
           ;;
       esac
-
-      exec ssh \
-        -i ${lib.escapeShellArg homelabTriggerKeyFile} \
-        -o IdentitiesOnly=yes \
-        -o StrictHostKeyChecking=accept-new \
-        -o UserKnownHostsFile=/var/lib/webhook/known_hosts \
-        deploy@${config.variables.homelab.wireguard.ip} \
-        -- deploy-all "$sha"
     '';
   };
 in
@@ -55,73 +92,164 @@ in
     port = webhookPort;
     urlPrefix = "hooks";
     openFirewall = false;
-    hooksTemplated.nixos-deploy = ''
-      {
-        "id": "nixos-deploy",
-        "execute-command": "${lib.getExe relayScript}",
-        "response-message": "deploy queued",
-        "pass-arguments-to-command": [
-          {
-            "source": "payload",
-            "name": "sha"
-          }
-        ],
-        "trigger-rule": {
-          "and": [
+    hooksTemplated = {
+      nixos-deploy-start = ''
+        {
+          "id": "nixos-deploy-start",
+          "execute-command": "${lib.getExe relayScript}",
+          "include-command-output-in-response": true,
+          "include-command-output-in-response-on-error": true,
+          "response-message": "deploy queued",
+          "pass-arguments-to-command": [
             {
-              "match": {
-                "type": "payload-hmac-sha256",
-                "secret": "{{ credential "deploy-webhook-secret" | js }}",
-                "parameter": {
-                  "source": "header",
-                  "name": "X-Hub-Signature-256"
-                }
-              }
+              "source": "string",
+              "name": "start"
             },
             {
-              "match": {
-                "type": "value",
-                "value": "wyatt-avilla/nixos",
-                "parameter": {
-                  "source": "payload",
-                  "name": "repository"
-                }
-              }
+              "source": "payload",
+              "name": "run_id"
             },
             {
-              "match": {
-                "type": "value",
-                "value": "refs/heads/main",
-                "parameter": {
-                  "source": "payload",
-                  "name": "ref"
-                }
-              }
-            },
-            {
-              "match": {
-                "type": "value",
-                "value": "all",
-                "parameter": {
-                  "source": "payload",
-                  "name": "target"
-                }
-              }
-            },
-            {
-              "match": {
-                "type": "regex",
-                "regex": "^[0-9a-f]{40}$",
-                "parameter": {
-                  "source": "payload",
-                  "name": "sha"
-                }
-              }
+              "source": "payload",
+              "name": "sha"
             }
-          ]
+          ],
+          "trigger-rule": {
+            "and": [
+              {
+                "match": {
+                  "type": "payload-hmac-sha256",
+                  "secret": "{{ credential "deploy-webhook-secret" | js }}",
+                  "parameter": {
+                    "source": "header",
+                    "name": "X-Hub-Signature-256"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "type": "value",
+                  "value": "wyatt-avilla/nixos",
+                  "parameter": {
+                    "source": "payload",
+                    "name": "repository"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "type": "value",
+                  "value": "refs/heads/main",
+                  "parameter": {
+                    "source": "payload",
+                    "name": "ref"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "type": "value",
+                  "value": "all",
+                  "parameter": {
+                    "source": "payload",
+                    "name": "target"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "type": "regex",
+                  "regex": "^[0-9]+$",
+                  "parameter": {
+                    "source": "payload",
+                    "name": "run_id"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "type": "regex",
+                  "regex": "^[0-9a-f]{40}$",
+                  "parameter": {
+                    "source": "payload",
+                    "name": "sha"
+                  }
+                }
+              }
+            ]
+          }
         }
-      }
-    '';
+      '';
+
+      nixos-deploy-status = ''
+        {
+          "id": "nixos-deploy-status",
+          "execute-command": "${lib.getExe relayScript}",
+          "include-command-output-in-response": true,
+          "include-command-output-in-response-on-error": true,
+          "response-headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "pass-arguments-to-command": [
+            {
+              "source": "string",
+              "name": "status"
+            },
+            {
+              "source": "payload",
+              "name": "run_id"
+            }
+          ],
+          "trigger-rule": {
+            "and": [
+              {
+                "match": {
+                  "type": "payload-hmac-sha256",
+                  "secret": "{{ credential "deploy-webhook-secret" | js }}",
+                  "parameter": {
+                    "source": "header",
+                    "name": "X-Hub-Signature-256"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "type": "value",
+                  "value": "wyatt-avilla/nixos",
+                  "parameter": {
+                    "source": "payload",
+                    "name": "repository"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "type": "value",
+                  "value": "refs/heads/main",
+                  "parameter": {
+                    "source": "payload",
+                    "name": "ref"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "type": "regex",
+                  "regex": "^[0-9]+$",
+                  "parameter": {
+                    "source": "payload",
+                    "name": "run_id"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      '';
+    };
   };
 
   systemd.services =

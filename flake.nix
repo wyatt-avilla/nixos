@@ -1,6 +1,7 @@
 {
   description = "My NixOS configuration";
 
+  # Temporary cache test comment.
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 

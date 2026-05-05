@@ -57,6 +57,8 @@ in
         dest = clientSecretFile;
         inherit user;
         mode = "400";
+        before = [ "oauth2-proxy.service" ];
+        requiredBy = [ "oauth2-proxy.service" ];
       })
       // (config.secrets.mkCopyService {
         name = "oauth2-proxy-copy-cookie-secret";
@@ -64,6 +66,8 @@ in
         dest = cookieSecretFile;
         inherit user;
         mode = "400";
+        before = [ "oauth2-proxy.service" ];
+        requiredBy = [ "oauth2-proxy.service" ];
       });
   };
 }

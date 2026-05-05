@@ -19,6 +19,6 @@ in
     user = botUser;
     group = botGroup;
     before = [ "claude-discord-bot.service" ];
-    wantedBy = [ "claude-discord-bot.service" ];
+    requiredBy = [ "claude-discord-bot.service" ];
   };
 }

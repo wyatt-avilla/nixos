@@ -35,6 +35,8 @@ in
       source = "${config.variables.secretsDirectory}/cloudflared-credentials";
       dest = credentialsFile;
       mode = "600";
+      before = [ "cloudflared-tunnel-homelab.service" ];
+      requiredBy = [ "cloudflared-tunnel-homelab.service" ];
     };
   };
 }

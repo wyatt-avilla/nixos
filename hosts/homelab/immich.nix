@@ -48,5 +48,7 @@ in
     dest = clientSecretFile;
     inherit user;
     mode = "400";
+    before = [ "immich-server.service" ];
+    requiredBy = [ "immich-server.service" ];
   };
 }

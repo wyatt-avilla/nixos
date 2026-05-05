@@ -22,7 +22,7 @@ in
       dest = lastfmApiKeyPath;
       inherit user group;
       before = [ "wyattwtf.service" ];
-      wantedBy = [ "wyattwtf.service" ];
+      requiredBy = [ "wyattwtf.service" ];
     })
     // (config.secrets.mkCopyService {
       name = "wyattwtf-goodreads-rss-url";
@@ -30,6 +30,6 @@ in
       dest = goodreadsRssUrlPath;
       inherit user group;
       before = [ "wyattwtf.service" ];
-      wantedBy = [ "wyattwtf.service" ];
+      requiredBy = [ "wyattwtf.service" ];
     });
 }

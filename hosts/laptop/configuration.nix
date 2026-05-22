@@ -43,8 +43,8 @@
         DEVICES_TO_DISABLE_ON_STARTUP = "bluetooth";
         DEVICES_TO_DISABLE_ON_BAT_NOT_IN_USE = "bluetooth";
 
-        START_CHARGE_THRESH_BAT0 = 75;
-        STOP_CHARGE_THRESH_BAT0 = 80;
+        START_CHARGE_THRESH_BAT0 = 95;
+        STOP_CHARGE_THRESH_BAT0 = 100;
       };
     };
   };

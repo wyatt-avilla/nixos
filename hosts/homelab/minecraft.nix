@@ -12,8 +12,8 @@
       server-ip = config.variables.homelab.wireguard.ip;
       server-port = config.variables.minecraft.port;
       online-mode = true;
-      white-list = false;
-      enforce-whitelist = false;
+      white-list = true;
+      enforce-whitelist = true;
       gamemode = "survival";
       difficulty = "normal";
       max-players = 10;

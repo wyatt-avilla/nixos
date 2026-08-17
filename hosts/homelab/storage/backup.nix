@@ -19,6 +19,7 @@ let
   pgDump = lib.getExe' config.services.postgresql.package "pg_dump";
   runuser = lib.getExe' pkgs.util-linux "runuser";
   btrfs = lib.getExe' pkgs.btrfs-progs "btrfs";
+  systemctl = lib.getExe' config.systemd.package "systemctl";
 
   snapshotTmpfileRules = lib.concatLists (
     lib.mapAttrsToList (name: _: [
@@ -32,6 +33,27 @@ let
     name: directory:
     let
       retentionCutoff = toString (directory.backup.snapshot.retention + 1);
+      quiesceService = directory.backup.snapshot.quiesceService or null;
+      quiesceScript = lib.optionalString (quiesceService != null) ''
+        quiesced_service_was_active=0
+
+        resume_quiesced_service() {
+          if [ "$quiesced_service_was_active" -eq 1 ]; then
+            ${systemctl} start ${lib.escapeShellArg quiesceService}
+            quiesced_service_was_active=0
+          fi
+        }
+
+        if ${systemctl} is-active --quiet ${lib.escapeShellArg quiesceService}; then
+          quiesced_service_was_active=1
+          trap resume_quiesced_service EXIT
+          ${systemctl} stop ${lib.escapeShellArg quiesceService}
+        fi
+      '';
+      resumeScript = lib.optionalString (quiesceService != null) ''
+        resume_quiesced_service
+        trap - EXIT
+      '';
     in
     {
       description = "Replicate the ${name} subvolume to the backup drive";
@@ -54,7 +76,11 @@ let
 
           mkdir -p "$source_snapshot_dir" "$backup_snapshot_dir"
 
+          ${quiesceScript}
+
           ${btrfs} subvolume snapshot -r "$source_subvolume" "$new_snapshot"
+
+          ${resumeScript}
 
           latest_common_snapshot="$(
             (
@@ -95,7 +121,7 @@ let
   snapshotTimers = lib.mapAttrs' (
     name: directory:
     lib.nameValuePair "${name}-backup" {
-      description = "Replicate ${name} snapshots weekly";
+      description = "Replicate ${name} snapshots on schedule";
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnCalendar = directory.backup.snapshot.timer;

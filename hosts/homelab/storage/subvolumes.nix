@@ -31,6 +31,7 @@ in
     before = [
       "filebrowser.service"
       "fix-storage-dir-perms.service"
+      "minecraft-server.service"
       "systemd-tmpfiles-resetup.service"
     ];
     wantedBy = [ "multi-user.target" ];

@@ -20,5 +20,10 @@
       type = lib.types.port;
       default = 9981;
     };
+
+    minecraft.port = lib.mkOption {
+      type = lib.types.port;
+      default = 25565;
+    };
   };
 }

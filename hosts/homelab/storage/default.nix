@@ -60,6 +60,19 @@ let
       ensureSubvolume = false;
       backup = null;
     };
+
+    minecraft = {
+      owner = "minecraft";
+      group = "storage";
+      mode = "0770";
+      assignServiceGroup = false;
+      ensureSubvolume = true;
+      backup.snapshot = {
+        timer = "*-*-* 02:30:00";
+        retention = 7;
+        quiesceService = "minecraft-server.service";
+      };
+    };
   };
 
   snapshotRoot = "${config.storageDir}/.snapshots";

@@ -14,6 +14,7 @@ in
   networking.firewall.allowedTCPPorts = [
     80
     443
+    config.variables.minecraft.port
   ];
 
   services.nginx = {
@@ -22,6 +23,16 @@ in
     recommendedTlsSettings = true;
     recommendedOptimisation = true;
     recommendedGzipSettings = true;
+
+    streamConfig = ''
+      server {
+        listen ${toString config.variables.minecraft.port};
+        proxy_pass ${config.variables.homelab.wireguard.ip}:${toString config.variables.minecraft.port};
+        proxy_connect_timeout 10s;
+        proxy_timeout 24h;
+        proxy_socket_keepalive on;
+      }
+    '';
 
     appendHttpConfig = ''
       proxy_buffer_size 128k;

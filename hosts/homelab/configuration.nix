@@ -9,6 +9,7 @@
     ./syncthing.nix
     ./filebrowser.nix
     ./immich.nix
+    ./minecraft.nix
     ./microbin.nix
     ./cloudflared.nix
     ./claude-discord-bot.nix

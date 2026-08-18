@@ -577,11 +577,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1777964296,
-        "narHash": "sha256-+lj2k5PDDL4OjWCrP/4TBThGnrU5tq3FbJphva0LRHQ=",
+        "lastModified": 1787063045,
+        "narHash": "sha256-K7Eh25HnlIqxfNaeO0JkTpfWhQvZJG3wyJo3F1RYaSE=",
         "owner": "wyatt-avilla",
         "repo": "wyatt.wtf",
-        "rev": "fdf496e83ff134e9487f6ff7e6a87e35afe470f5",
+        "rev": "57c9e87549b6f94c1b647ce8dd04b4e846ebbac2",
         "type": "github"
       },
       "original": {

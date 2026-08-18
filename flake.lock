@@ -275,11 +275,11 @@
         "sops-nix": "sops-nix"
       },
       "locked": {
-        "lastModified": 1787019102,
-        "narHash": "sha256-hfBYANFWBxw4WU22fbLEa+KG9L/qUu5v5zFEBP3dw2A=",
+        "lastModified": 1787021045,
+        "narHash": "sha256-KBc8HQF2vA2RGS3S4i4QVZtKl4zL81ESm9R+lhcTea8=",
         "ref": "refs/heads/main",
-        "rev": "e2ecdabcc468c9406dc6fa61dc53332a25bbac1d",
-        "revCount": 68,
+        "rev": "9ac2804278249197a41620615df84ec90174042c",
+        "revCount": 69,
         "type": "git",
         "url": "ssh://git@github.com/wyatt-avilla/nix-secrets"
       },

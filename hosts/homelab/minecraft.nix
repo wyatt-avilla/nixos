@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  inputs,
+  pkgs,
+  ...
+}:
 {
   services.minecraft-server = {
     enable = true;
@@ -24,7 +29,7 @@
       motd = "wemworld";
     };
 
-    whitelist = { };
+    inherit (inputs.nix-secrets.nixosModules.plainSecrets.homelab.minecraft) whitelist;
   };
 
   users.users.minecraft.extraGroups = [ "storage" ];

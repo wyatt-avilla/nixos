@@ -25,7 +25,7 @@ in
       gamemode = "survival";
       difficulty = "normal";
       max-players = builtins.length whitelist;
-      view-distance = 10;
+      view-distance = 16;
       simulation-distance = 10;
       enable-rcon = false;
       enable-query = false;

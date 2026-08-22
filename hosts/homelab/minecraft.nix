@@ -26,7 +26,7 @@
       simulation-distance = 10;
       enable-rcon = false;
       enable-query = false;
-      motd = "wemworld";
+      motd = "§d§lwemworld";
     };
 
     inherit (inputs.nix-secrets.nixosModules.plainSecrets.homelab.minecraft) whitelist;

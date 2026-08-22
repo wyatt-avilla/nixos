@@ -29,7 +29,7 @@ in
       simulation-distance = 10;
       enable-rcon = false;
       enable-query = false;
-      motd = "§d§lwemworld";
+      motd = "§dwemworld";
     };
 
     inherit whitelist;

@@ -14,7 +14,7 @@ in
     eula = true;
     dataDir = config.storage.paths.data.minecraft;
     package = pkgs.minecraft-server;
-    jvmOpts = "-Xms1G -Xmx4G";
+    jvmOpts = "-Xms2G -Xmx8G";
 
     serverProperties = {
       server-ip = config.variables.homelab.wireguard.ip;

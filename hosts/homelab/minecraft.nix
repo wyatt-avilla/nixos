@@ -4,6 +4,9 @@
   pkgs,
   ...
 }:
+let
+  inherit (inputs.nix-secrets.nixosModules.plainSecrets.homelab.minecraft) whitelist;
+in
 {
   services.minecraft-server = {
     enable = true;
@@ -21,7 +24,7 @@
       enforce-whitelist = true;
       gamemode = "survival";
       difficulty = "normal";
-      max-players = 10;
+      max-players = builtins.length whitelist;
       view-distance = 10;
       simulation-distance = 10;
       enable-rcon = false;
@@ -29,7 +32,7 @@
       motd = "§d§lwemworld";
     };
 
-    inherit (inputs.nix-secrets.nixosModules.plainSecrets.homelab.minecraft) whitelist;
+    inherit whitelist;
   };
 
   users.users.minecraft.extraGroups = [ "storage" ];

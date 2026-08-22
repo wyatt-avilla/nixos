@@ -24,7 +24,7 @@ in
       enforce-whitelist = true;
       gamemode = "survival";
       difficulty = "normal";
-      max-players = builtins.length whitelist;
+      max-players = builtins.length (builtins.attrNames whitelist);
       view-distance = 16;
       simulation-distance = 10;
       enable-rcon = false;

@@ -50,7 +50,7 @@ let
       systemd-run \
         -E LOCALE_ARCHIVE \
         -E NIXOS_INSTALL_BOOTLOADER=0 \
-        -E NIXOS_NO_CHECK \
+        -E NIXOS_NO_CHECK=1 \
         --collect \
         --no-ask-password \
         --pipe \

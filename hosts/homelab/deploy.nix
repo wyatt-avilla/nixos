@@ -338,7 +338,7 @@ let
       systemd-run \
         -E LOCALE_ARCHIVE \
         -E NIXOS_INSTALL_BOOTLOADER=0 \
-        -E NIXOS_NO_CHECK \
+        -E NIXOS_NO_CHECK=1 \
         --collect \
         --no-ask-password \
         --pipe \
@@ -458,6 +458,8 @@ in
 
     "nixos-auto-deploy@" = {
       description = "Builds and deploys NixOS hosts for GitHub run/commit %i";
+      restartIfChanged = false;
+      stopIfChanged = false;
       after = [
         "network-online.target"
         "wireguard-wg0.service"

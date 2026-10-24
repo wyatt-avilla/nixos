@@ -1,10 +1,16 @@
-{ lib, pkgs, ... }:
+{
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 {
   imports = [
     ./ssh.nix
     ./sops.nix
     ./wireguard.nix
     ./service-variables.nix
+    ./observability.nix
   ];
 
   config = {
@@ -20,6 +26,6 @@
 
   options.variables.domain = lib.mkOption {
     type = lib.types.str;
-    default = "wyatt.wtf";
+    default = inputs.nix-secrets.nixosModules.plainSecrets.domain.personal;
   };
 }

@@ -174,6 +174,6 @@
 
       devShells.${system}.default = ci.devShell;
 
-      checks.${system} = ci.checks;
+      checks.${system} = ci.checks // import ./tests/observability { inherit pkgs self; };
     };
 }

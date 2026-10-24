@@ -21,6 +21,10 @@
     wyattwtf = {
       url = "github:wyatt-avilla/wyatt.wtf";
     };
+
+    attosend = {
+      url = "github:wyatt-avilla/attosend";
+    };
   };
 
   outputs =

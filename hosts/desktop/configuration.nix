@@ -7,6 +7,11 @@
 
   networking.hostName = "puriel";
 
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
   boot = {
     kernelParams = [
       "video=1920x1080"

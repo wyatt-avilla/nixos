@@ -14,6 +14,7 @@
 
   networking.hostName = "ambriel";
   services.homelabObservability.enable = true;
+  services.journald.settings.Journal.SystemMaxUse = "100M";
 
   boot.loader = {
     systemd-boot.enable = lib.mkForce false;

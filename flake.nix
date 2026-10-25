@@ -16,14 +16,17 @@
 
     claude-discord-bot = {
       url = "github:wyatt-avilla/claude-discord-bot";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     wyattwtf = {
       url = "github:wyatt-avilla/wyatt.wtf";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     attosend = {
       url = "github:wyatt-avilla/attosend";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 

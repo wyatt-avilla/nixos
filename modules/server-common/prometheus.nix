@@ -6,7 +6,7 @@
 }:
 let
   cfg = config.services.homelabObservability;
-  notifier = config.services.homelabNotifications;
+  notifier = config.services.attosend;
   isHomelab = config.networking.hostName == "barachiel";
   homeIp = config.variables.homelab.wireguard.ip;
   inherit (config.variables) domain;
@@ -139,7 +139,7 @@ in
   };
   config = lib.mkIf cfg.enable {
     services = {
-      homelabNotifications.checkSettings.readiness = {
+      attosend.checks.readiness = {
         prometheus = "http://127.0.0.1:9090/-/ready";
         alertmanager = "http://127.0.0.1:9093/-/ready";
       };

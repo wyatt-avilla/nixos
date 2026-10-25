@@ -1,6 +1,7 @@
-{ pkgs }:
+{ pkgs, inputs }:
 pkgs.testers.runNixOSTest {
   name = "homelab-observability";
+  node.specialArgs = { inherit inputs; };
   nodes = builtins.listToAttrs (
     map
       (name: {
@@ -24,7 +25,6 @@ pkgs.testers.runNixOSTest {
               };
             };
             config = {
-              _module.args.inputs = { };
               networking = {
                 hostName = name;
                 firewall.enable = false;
@@ -58,7 +58,7 @@ pkgs.testers.runNixOSTest {
                     type = "observability-test-invalid-filesystem";
                   }
                 ];
-                timers.notification-check.timerConfig = {
+                timers.attosend-check.timerConfig = {
                   OnBootSec = lib.mkForce "2s";
                   OnUnitActiveSec = lib.mkForce "2s";
                 };
@@ -69,7 +69,7 @@ pkgs.testers.runNixOSTest {
                   peer = if name == "first" then "10.0.0.2" else "10.0.0.1";
                   failureSeconds = 2;
                 };
-                homelabNotifications = {
+                attosend = {
                   sender = "alerts@example.org";
                   recipient = "test@example.org";
                   credentialPath = "/etc/mock-resend-key";
@@ -79,6 +79,10 @@ pkgs.testers.runNixOSTest {
                   globalConfig.scrape_interval = lib.mkForce "2s";
                   globalConfig.evaluation_interval = lib.mkForce "2s";
                   scrapeConfigs = lib.mkForce [
+                    {
+                      job_name = "notifications";
+                      static_configs = [ { targets = [ "127.0.0.1:9169" ]; } ];
+                    }
                     {
                       job_name = "mock-apps";
                       metrics_path = "/probe";
@@ -107,7 +111,7 @@ pkgs.testers.runNixOSTest {
                   ];
                   alertmanager.configuration = lib.mkForce {
                     route = {
-                      receiver = "test";
+                      receiver = "local-notifications";
                       group_by = [ "alertname" ];
                       group_wait = "1s";
                       group_interval = "1s";
@@ -115,7 +119,7 @@ pkgs.testers.runNixOSTest {
                     };
                     receivers = [
                       {
-                        name = "test";
+                        name = "local-notifications";
                         webhook_configs = [
                           {
                             url = "http://127.0.0.1:9169/alertmanager";
@@ -129,10 +133,9 @@ pkgs.testers.runNixOSTest {
               };
               environment.systemPackages = [
                 pkgs.curl
-                pkgs.sqlite
                 pkgs.iproute2
               ];
-              virtualisation.memorySize = 1024;
+              virtualisation.memorySize = 2048;
             };
           };
       })
@@ -146,7 +149,7 @@ pkgs.testers.runNixOSTest {
 
     start_all()
     for machine in (first, second):
-        machine.wait_for_unit("homelab-notifications.service")
+        machine.wait_for_unit("attosend.service")
         machine.wait_for_unit("prometheus.service")
         machine.wait_for_unit("alertmanager.service")
         machine.wait_for_unit("mock-resend.service")
@@ -155,6 +158,20 @@ pkgs.testers.runNixOSTest {
     with subtest("monitoring listeners remain private"):
         for port in (9090, 9093, 9100, 9115, 9169):
             second.fail(f"curl -fsS --connect-timeout 2 http://10.0.0.1:{port}/")
+
+    with subtest("attosend replaces the legacy implementation"):
+        for machine in (first, second):
+            machine.succeed("runuser -u attosend -- attosend queue")
+            machine.fail("runuser -u nobody -- attosend queue")
+            machine.fail("grep mock-test-key /etc/attosend/config.json")
+            machine.succeed("test $(stat -c %a /run/attosend/control.sock) = 660")
+            machine.succeed("test -f /var/lib/attosend/queue.db")
+            machine.wait_until_succeeds("curl -fsSG http://127.0.0.1:9090/api/v1/query --data-urlencode 'query=up{job=\"notifications\"}' | grep '\"1\"'")
+            machine.fail("command -v homelab-notify")
+            for unit in ("homelab-notifications.service", "notification-check.timer", "notification-check.service", "notification-failure@.service"):
+                assert machine.succeed(f"systemctl show {unit} -p LoadState --value").strip() == "not-found"
+            hook = machine.succeed("systemctl show intentional-failure -p OnFailure --value").strip()
+            assert hook == "attosend-failure@intentional-failure.service.service", hook
 
     def received(machine, text):
         machine.wait_until_succeeds("grep -F '" + text + "' /var/lib/mock-resend/messages", timeout=180)
@@ -180,10 +197,21 @@ pkgs.testers.runNixOSTest {
             machine.wait_until_succeeds("grep 'RESOLVED.*WireGuard peer' /var/lib/mock-resend/messages")
 
     with subtest("queue survives stopped delivery and restart"):
-        first.succeed("systemctl stop homelab-notifications")
-        first.succeed("runuser -u homelab-notifications -- homelab-notify submit --key offline --summary offline-message")
-        first.succeed("systemctl start homelab-notifications")
-        received(first, "offline-message")
+        first.succeed("touch /var/lib/mock-resend/unavailable")
+        first.succeed("runuser -u attosend -- attosend submit --key restart --summary restart-message")
+        rows = json.loads(first.succeed("attosend queue"))
+        pending_ids = {row["id"] for row in rows if row["state"] == "pending"}
+        assert pending_ids
+        first.succeed("systemctl stop attosend-check.timer attosend-check.service")
+        first.succeed("systemctl stop attosend")
+        first.fail("runuser -u attosend -- attosend submit --key offline --summary offline-message")
+        first.succeed("systemctl start attosend")
+        rows = json.loads(first.succeed("attosend queue"))
+        assert pending_ids <= {row["id"] for row in rows if row["state"] == "pending"}
+        first.succeed("rm /var/lib/mock-resend/unavailable")
+        received(first, "restart-message")
+        first.fail("grep -F offline-message /var/lib/mock-resend/messages")
+        first.succeed("systemctl start attosend-check.timer")
 
     with subtest("login probe does not mask backend failure"):
         first.succeed("curl -fsSG http://127.0.0.1:9115/probe --data-urlencode target=http://127.0.0.1:9088/login --data-urlencode module=login_files | grep 'probe_success 1'")
@@ -198,13 +226,13 @@ pkgs.testers.runNixOSTest {
         received(first, "RESOLVED: Application mock")
 
     with subtest("no recursive notification handler"):
-        first.succeed("mkdir -p /run/systemd/system/notification-failure@nonexistent.service.service.d")
-        first.succeed("printf '[Service]\\nExecStartPre=${pkgs.coreutils}/bin/false\\n' > /run/systemd/system/notification-failure@nonexistent.service.service.d/force-failure.conf")
+        first.succeed("mkdir -p /run/systemd/system/attosend-failure@nonexistent.service.service.d")
+        first.succeed("printf '[Service]\\nExecStartPre=${pkgs.coreutils}/bin/false\\n' > /run/systemd/system/attosend-failure@nonexistent.service.service.d/force-failure.conf")
         first.succeed("systemctl daemon-reload")
-        first.fail("systemctl start notification-failure@nonexistent.service.service")
-        first.succeed("systemctl is-failed notification-failure@nonexistent.service.service")
-        assert first.succeed("systemctl show notification-failure@nonexistent.service.service --property=OnFailure --value").strip() == ""
+        first.fail("systemctl start attosend-failure@nonexistent.service.service")
+        first.succeed("systemctl is-failed attosend-failure@nonexistent.service.service")
+        assert first.succeed("systemctl show attosend-failure@nonexistent.service.service --property=OnFailure --value").strip() == ""
         units = json.loads(first.succeed("systemctl list-units --all --output=json"))
-        assert not any("notification-failure@notification-failure" in unit["unit"] for unit in units)
+        assert not any("attosend-failure@attosend-failure" in unit["unit"] for unit in units)
   '';
 }

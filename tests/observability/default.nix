@@ -77,13 +77,6 @@ let
   );
 in
 {
-  notifications = pkgs.runCommand "notification-tests" { nativeBuildInputs = [ pkgs.python3 ]; } ''
-    cp -r ${../..} source
-    chmod -R u+w source
-    cd source
-    python3 -m unittest discover -s tests/observability -v
-    touch $out
-  '';
   observability-rules =
     pkgs.runCommand "observability-rules" { nativeBuildInputs = [ pkgs.prometheus.cli ]; }
       ''
@@ -91,5 +84,8 @@ in
         promtool test rules ${tests}
         touch $out
       '';
-  observability-vm = import ./vm.nix { inherit pkgs; };
+  observability-vm = import ./vm.nix {
+    inherit pkgs;
+    inherit (self) inputs;
+  };
 }

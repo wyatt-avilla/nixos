@@ -7,6 +7,10 @@ import os
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
+        if os.path.exists("/var/lib/mock-resend/unavailable"):
+            self.send_response(503)
+            self.end_headers()
+            return
         payload = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
         with open("/var/lib/mock-resend/messages", "a", encoding="utf-8") as handle:
             handle.write(json.dumps(payload) + "\n")

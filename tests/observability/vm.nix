@@ -168,8 +168,9 @@ pkgs.testers.runNixOSTest {
             machine.succeed("test -f /var/lib/attosend/queue.db")
             machine.wait_until_succeeds("curl -fsSG http://127.0.0.1:9090/api/v1/query --data-urlencode 'query=up{job=\"notifications\"}' | grep '\"1\"'")
             machine.fail("command -v homelab-notify")
-            for unit in ("homelab-notifications.service", "notification-check.timer", "notification-check.service", "notification-failure@.service"):
+            for unit in ("homelab-notifications.service", "notification-check.timer", "notification-check.service"):
                 assert machine.succeed(f"systemctl show {unit} -p LoadState --value").strip() == "not-found"
+            machine.fail("systemctl cat notification-failure@.service")
             hook = machine.succeed("systemctl show intentional-failure -p OnFailure --value").strip()
             assert hook == "attosend-failure@intentional-failure.service.service", hook
 

@@ -12,6 +12,8 @@ in
       inherit (config.variables.filebrowser) port;
       root = rootDir;
       database = databaseFile;
+      # Expose the explicitly managed sibling storage directories linked into rootDir.
+      followExternalSymlinks = true;
     };
   };
 }

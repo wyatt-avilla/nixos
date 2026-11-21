@@ -14,7 +14,6 @@
     kernelPackages = pkgs.linuxPackages_latest;
 
     consoleLogLevel = 0;
-    initrd.verbose = false;
 
     loader = {
       systemd-boot.enable = true;
